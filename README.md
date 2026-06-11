@@ -7,7 +7,20 @@ relance retards).
 **Stack** : Next.js (PWA via Serwist) · Supabase (BDD + Auth + Edge Functions + pg_cron) ·
 Claude API (Anthropic) · Web Push API · Resend · Vercel
 
-**Statut** : cadrage terminé — développement non démarré.
+**Statut** : Sprint 0 terminé — scaffold opérationnel, base Supabase migrée, déployé sur Vercel.
+Prochaine étape : tranche ① (auth + capture texte + backlog).
+
+## Démarrage rapide
+
+```bash
+npm install
+cp .env.example .env.local   # puis renseigner les clés
+npm run dev                  # http://localhost:3000
+npm run build                # build production (webpack, requis par Serwist)
+npm test                     # Jest (unit / integration / e2e)
+```
+
+**Infra** : Supabase `app-taches` (`gtyinljbotgcxinjfgjc`, région eu-west-3 Paris) · Vercel `app-taches`.
 
 ---
 
@@ -44,6 +57,11 @@ date du document modifié.
 | 2026-06-11 | `next-pwa` remplacé par **Serwist** (`@serwist/next`) | next-pwa non maintenu, incompatible Next.js récents |
 | 2026-06-11 | Champ `login` supprimé — connexion par **email** (cadrage §19.5) | Supabase Auth ne gère que l'email ; complexité et risque sans bénéfice en solo |
 | 2026-06-11 | **Keep-alive Supabase** : route `/api/keepalive` + cron Vercel quotidien | Le plan gratuit Supabase pause les projets inactifs ~7 jours → pg_cron et notifications stoppés |
+| 2026-06-11 | `@supabase/auth-helpers-nextjs` remplacé par **`@supabase/ssr`** | auth-helpers est déprécié ; @supabase/ssr est le successeur officiel |
+| 2026-06-11 | `middleware.ts` → **`proxy.ts`** | Convention renommée dans Next.js 16 |
+| 2026-06-11 | Build production avec **webpack** (`next build --webpack`) | Serwist ne supporte pas encore Turbopack en mode plugin (dev reste sur Turbopack, SW désactivé en dev) |
+| 2026-06-11 | ESLint 9 **flat config** (`eslint.config.mjs`) au lieu de `.eslintrc.json` | Format par défaut de Next 16 / ESLint 9 |
+| 2026-06-11 | Stub SQL `process_notifications()` dans la migration triggers | Référencée par pg_cron mais implémentée en tranche ④ — le stub évite l'échec de migration |
 
 ## Prochaine étape
 
