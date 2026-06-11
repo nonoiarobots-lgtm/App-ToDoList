@@ -25,7 +25,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>
+        <div className="app-frame">{children}</div>
+      </body>
     </html>
   );
 }

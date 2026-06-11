@@ -1,13 +1,10 @@
-// Layout des écrans protégés — NavBar 5 onglets + bouton "+" (tranche ①)
+import { AppShell } from '@/components/layout/AppShell';
+
+// Layout des écrans protégés — NavBar 5 onglets + bouton "+" de capture rapide
 export default function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <div>
-      {children}
-      {/* TODO tranche ① : <NavBar /> (5 onglets) + <Fab /> (capture rapide) */}
-    </div>
-  );
+  return <AppShell>{children}</AppShell>;
 }
