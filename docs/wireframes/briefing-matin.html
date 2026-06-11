@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing Matin — Wireframe Mobile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --border: #2e2e2e;
+    --text: #e8e8e8; --text-dim: #888; --text-muted: #555;
+    --p1: #ff4444; --p2: #ff9900; --p3: #4a9eff; --p4: #555;
+    --orange: #ff9900; --red: #ff4444; --green: #2ecc71; --accent: #4a9eff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1c1c1e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; font-family: 'IBM Plex Sans', sans-serif; gap: 32px; flex-wrap: wrap; }
+  .phone { width: 390px; background: var(--bg); border-radius: 44px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px #333; position: relative; }
+  .phone-label { color: #666; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-align: center; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .status-bar { padding: 14px 24px 8px; display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); }
+
+  /* HEADER BRIEFING */
+  .brief-header { padding: 10px 20px 4px; }
+  .brief-date { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px; }
+  .brief-title { font-size: 24px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+
+  /* STATS RÉSUMÉ */
+  .stats-row { display: flex; gap: 8px; padding: 10px 16px 12px; }
+  .stat-box { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 10px 8px; text-align: center; }
+  .stat-num { font-size: 22px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; line-height: 1; }
+  .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; font-family: 'IBM Plex Mono', monospace; }
+  .stat-box.retard .stat-num { color: var(--red); }
+  .stat-box.today .stat-num { color: var(--accent); }
+  .stat-box.done .stat-num { color: var(--green); }
+
+  /* SCROLL */
+  .scroll-area { max-height: 620px; overflow-y: auto; scrollbar-width: none; padding-bottom: 130px; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* PROJET ACCORDÉON */
+  .project-block { margin: 0 16px 6px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+
+  .project-header {
+    background: var(--surface);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .project-header:active { background: var(--surface2); }
+
+  .project-color { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .project-info { flex: 1; min-width: 0; }
+  .project-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .project-summary { font-size: 11px; color: #aaaaaa; margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+  .project-summary .retard-count { color: var(--red); font-weight: 600; }
+
+  .project-chevron { color: var(--text-muted); font-size: 12px; transition: transform 0.2s; flex-shrink: 0; }
+  .project-block.open .project-chevron { transform: rotate(90deg); }
+
+  /* TÂCHES DANS L'ACCORDÉON */
+  .project-tasks { display: none; background: var(--surface2); border-top: 1px solid var(--border); }
+  .project-block.open .project-tasks { display: block; }
+
+  .task-row {
+    padding: 10px 14px 10px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .task-row:last-child { border-bottom: none; }
+
+  .task-check {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .task-check:active { background: rgba(46,204,113,0.2); border-color: var(--green); }
+  .task-check.checked { background: var(--green); border-color: var(--green); }
+  .task-check.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+
+  .task-body { flex: 1; min-width: 0; }
+  .task-title { font-size: 13px; color: var(--text); font-weight: 500; line-height: 1.3; }
+  .task-title.done { text-decoration: line-through; color: var(--text-muted); }
+
+  .task-badges { display: flex; gap: 5px; margin-top: 4px; flex-wrap: wrap; align-items: center; }
+  .badge-date { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .badge-late { background: rgba(255,68,68,0.12); color: var(--red); }
+  .badge-today { background: rgba(74,158,255,0.12); color: var(--accent); }
+  .badge-qualify { color: #ffdc00; font-size: 11px; }
+
+  .priority-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+  .p1 { background: var(--p1); } .p2 { background: var(--p2); } .p3 { background: var(--p3); }
+
+  /* PROGRESS MINI */
+  .progress-mini { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+  .progress-bar-mini { flex: 1; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; }
+  .progress-pct { font-size: 9px; font-family: 'IBM Plex Mono', monospace; color: var(--text-muted); min-width: 22px; text-align: right; }
+
+  /* NAV */
+  .nav-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,15,15,0.95); border-top: 1px solid var(--border); padding: 8px 0 20px; display: flex; justify-content: space-around; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 16px; cursor: pointer; }
+  .nav-icon { font-size: 20px; }
+  .nav-label { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .nav-item.active .nav-label { color: var(--accent); }
+  .nav-badge { position: relative; }
+  .nbadge { position: absolute; top: -4px; right: -8px; background: var(--red); color: #fff; font-size: 9px; font-family: 'IBM Plex Mono', monospace; padding: 1px 4px; border-radius: 8px; font-weight: 600; }
+
+  /* FAB vocal */
+  .fab { position: absolute; bottom: 90px; right: 20px; width: 52px; height: 52px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 4px 16px rgba(74,158,255,0.4); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN 1 : BRIEFING — ACCORDÉON FERMÉ -->
+<div>
+  <div class="phone-label">① Briefing matin — Vue initiale (accordéons fermés)</div>
+  <div class="phone">
+    <div class="status-bar"><span>8:00</span><span>● ● ●</span></div>
+
+    <div class="brief-header">
+      <div class="brief-date">Vendredi 30 mai 2026</div>
+      <div class="brief-title">Bonjour 👋</div>
+    </div>
+
+    <!-- Stats résumé -->
+    <div class="stats-row">
+      <div class="stat-box retard">
+        <div class="stat-num">4</div>
+        <div class="stat-label">En retard</div>
+      </div>
+      <div class="stat-box today">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Aujourd'hui</div>
+      </div>
+      <div class="stat-box done">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Faites</div>
+      </div>
+    </div>
+
+    <div class="scroll-area">
+
+      <!-- PROJET 1 : Recherche emploi — 5 tâches dont 2 en retard -->
+      <div class="project-block">
+        <div class="project-header">
+          <div class="project-color" style="background:#4a9eff;"></div>
+          <div class="project-info">
+            <div class="project-name">Recherche emploi</div>
+            <div class="project-summary">5 tâches · <span class="retard-count">2 en retard</span></div>
+          </div>
+          <div class="project-chevron">›</div>
+        </div>
+      </div>
+
+      <!-- PROJET 2 : Formation IA — 4 tâches dont 1 en retard -->
+      <div class="project-block">
+        <div class="project-header">
+          <div class="project-color" style="background:#2ecc71;"></div>
+          <div class="project-info">
+            <div class="project-name">Formation IA</div>
+            <div class="project-summary">4 tâches · <span class="retard-count">1 en retard</span></div>
+          </div>
+          <div class="project-chevron">›</div>
+        </div>
+      </div>
+
+      <!-- PROJET 3 : Perso — 3 tâches dont 1 en retard -->
+      <div class="project-block">
+        <div class="project-header">
+          <div class="project-color" style="background:#ff9900;"></div>
+          <div class="project-info">
+            <div class="project-name">Perso</div>
+            <div class="project-summary">3 tâches · <span class="retard-count">1 en retard</span></div>
+          </div>
+          <div class="project-chevron">›</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="fab">＋</div>
+    <div class="nav-bar">
+      <div class="nav-item active"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="nbadge">15</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 2 : BRIEFING — PROJET OUVERT -->
+<div>
+  <div class="phone-label">② Briefing matin — Projet ouvert (accordéon déplié)</div>
+  <div class="phone">
+    <div class="status-bar"><span>8:00</span><span>● ● ●</span></div>
+
+    <div class="brief-header">
+      <div class="brief-date">Vendredi 30 mai 2026</div>
+      <div class="brief-title">Bonjour 👋</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box retard"><div class="stat-num">4</div><div class="stat-label">En retard</div></div>
+      <div class="stat-box today"><div class="stat-num">8</div><div class="stat-label">Aujourd'hui</div></div>
+      <div class="stat-box done"><div class="stat-num">2</div><div class="stat-label">Faites</div></div>
+    </div>
+
+    <div class="scroll-area">
+
+      <!-- PROJET 1 OUVERT : Recherche emploi -->
+      <div class="project-block open">
+        <div class="project-header">
+          <div class="project-color" style="background:#4a9eff;"></div>
+          <div class="project-info">
+            <div class="project-name">Recherche emploi</div>
+            <div class="project-summary">5 tâches · <span class="retard-count">2 en retard</span></div>
+          </div>
+          <div class="project-chevron">›</div>
+        </div>
+        <div class="project-tasks">
+
+          <!-- Tâche en retard -->
+          <div class="task-row">
+            <div class="priority-dot p1"></div>
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-title">Relancer prestataire livraison</div>
+              <div class="task-badges">
+                <span class="badge-date badge-late">⚑ 28/05 · retard 2j</span>
+              </div>
+              <div class="progress-mini">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:30%;background:#ff9900;"></div></div>
+                <span class="progress-pct">30%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tâche en retard + à qualifier -->
+          <div class="task-row">
+            <div class="priority-dot p2"></div>
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-title">Préparer questions entretien RH</div>
+              <div class="task-badges">
+                <span class="badge-date badge-late">⚑ 26/05 · retard 4j</span>
+                <span class="badge-qualify">⚡</span>
+              </div>
+              <div class="progress-mini">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:0%;background:#555;"></div></div>
+                <span class="progress-pct">0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tâche du jour -->
+          <div class="task-row">
+            <div class="priority-dot p1"></div>
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-title">Préparer pitch — nouveau poste</div>
+              <div class="task-badges">
+                <span class="badge-date badge-today">⚑ Aujourd'hui</span>
+              </div>
+              <div class="progress-mini">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:45%;background:#4a9eff;"></div></div>
+                <span class="progress-pct">45%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tâche du jour cochée -->
+          <div class="task-row">
+            <div class="priority-dot p3"></div>
+            <div class="task-check checked"></div>
+            <div class="task-body">
+              <div class="task-title done">Envoyer CV à cabinet Heidrick</div>
+              <div class="task-badges">
+                <span class="badge-date badge-today">⚑ Aujourd'hui</span>
+              </div>
+              <div class="progress-mini">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:100%;background:#2ecc71;"></div></div>
+                <span class="progress-pct" style="color:#2ecc71;">100%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tâche du jour à qualifier -->
+          <div class="task-row">
+            <div class="priority-dot p2"></div>
+            <div class="task-check"></div>
+            <div class="task-body">
+              <div class="task-title">Appeler chasseur de tête</div>
+              <div class="task-badges">
+                <span class="badge-date badge-today">⚑ Aujourd'hui</span>
+                <span class="badge-qualify">⚡</span>
+              </div>
+              <div class="progress-mini">
+                <div class="progress-bar-mini"><div class="progress-fill" style="width:0%;background:#555;"></div></div>
+                <span class="progress-pct">0%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PROJET 2 FERMÉ -->
+      <div class="project-block">
+        <div class="project-header">
+          <div class="project-color" style="background:#2ecc71;"></div>
+          <div class="project-info">
+            <div class="project-name">Formation IA</div>
+            <div class="project-summary">4 tâches · <span class="retard-count">1 en retard</span></div>
+          </div>
+          <div class="project-chevron">›</div>
+        </div>
+      </div>
+
+      <!-- PROJET 3 FERMÉ -->
+      <div class="project-block">
+        <div class="project-header">
+          <div class="project-color" style="background:#ff9900;"></div>
+          <div class="project-info">
+            <div class="project-name">Perso</div>
+            <div class="project-summary">3 tâches · <span class="retard-count">1 en retard</span></div>
+          </div>
+          <div class="project-chevron">›</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="fab">＋</div>
+    <div class="nav-bar">
+      <div class="nav-item active"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="nbadge">15</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.project-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.closest('.project-block').classList.toggle('open');
+    });
+  });
+</script>
+</body>
+</html>

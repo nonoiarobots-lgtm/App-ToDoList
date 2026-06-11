@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backlog — Wireframe Mobile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --border: #2e2e2e;
+    --text: #e8e8e8; --text-dim: #888; --text-muted: #555;
+    --p1: #ff4444; --p2: #ff9900; --p3: #4a9eff; --p4: #555;
+    --orange: #ff9900; --red: #ff4444; --green: #2ecc71; --accent: #4a9eff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1c1c1e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; font-family: 'IBM Plex Sans', sans-serif; gap: 32px; flex-wrap: wrap; }
+  .phone { width: 390px; background: var(--bg); border-radius: 44px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px #333; position: relative; }
+  .phone-label { color: #666; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-align: center; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .status-bar { padding: 14px 24px 8px; display: flex; justify-content: space-between; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); }
+  .banner { margin: 0 16px 4px; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .banner.orange { background: rgba(255,153,0,0.15); border: 1px solid rgba(255,153,0,0.3); color: var(--orange); }
+  .banner.red { background: rgba(255,68,68,0.15); border: 1px solid rgba(255,68,68,0.3); color: var(--red); }
+  .banner-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .header { padding: 12px 20px 8px; display: flex; justify-content: space-between; align-items: center; }
+  .header-title { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .header-count { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-dim); background: var(--surface2); padding: 4px 10px; border-radius: 20px; }
+  .search-bar { margin: 4px 16px 8px; background: var(--surface2); border-radius: 10px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); }
+  .search-placeholder { color: var(--text-muted); font-size: 14px; }
+  .filter-row { padding: 4px 16px 8px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .filter-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap; border: 1px solid var(--border); color: var(--text-dim); background: var(--surface); cursor: pointer; }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .sort-bar { padding: 0 16px 6px; display: flex; gap: 4px; align-items: center; }
+  .sort-label { font-size: 11px; color: var(--text-muted); margin-right: 4px; font-family: 'IBM Plex Mono', monospace; }
+  .sort-btn { padding: 3px 10px; border-radius: 4px; font-size: 11px; color: var(--text-dim); background: transparent; border: 1px solid transparent; cursor: pointer; font-family: 'IBM Plex Mono', monospace; }
+  .sort-btn.active { color: var(--text); border-color: var(--border); background: var(--surface2); }
+  .section-header { padding: 6px 16px 4px; display: flex; justify-content: space-between; align-items: center; }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'IBM Plex Mono', monospace; }
+  .section-count { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .task-list { padding: 0 16px; display: flex; flex-direction: column; gap: 4px; }
+  .task-item { background: var(--surface); border-radius: 10px; padding: 11px 12px; display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border); position: relative; overflow: hidden; cursor: pointer; }
+  .task-item.overdue { border-left: 3px solid var(--red); }
+  .task-item.today { border-left: 3px solid var(--accent); }
+  .task-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+  .task-check.checked { background: var(--green); border-color: var(--green); }
+  .task-check.checked::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+  .task-body { flex: 1; min-width: 0; }
+  .task-title { font-size: 14px; color: var(--text); font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-title.done { text-decoration: line-through; color: var(--text-muted); }
+  .task-meta { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; align-items: center; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .tag-project { background: rgba(74,158,255,0.12); color: #4a9eff; }
+  .tag-date { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+  .tag-date.late { background: rgba(255,68,68,0.12); color: var(--red); }
+  .tag-date.today-tag { background: rgba(74,158,255,0.12); color: var(--accent); }
+  .tag-delegate { background: rgba(255,153,0,0.1); color: var(--orange); }
+  .priority-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .p1 { background: var(--p1); } .p2 { background: var(--p2); } .p3 { background: var(--p3); } .p4 { background: var(--p4); }
+  .task-arrow { color: var(--text-muted); font-size: 12px; margin-top: 2px; flex-shrink: 0; }
+
+  /* PROGRESS */
+  .progress-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .progress-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; }
+  .progress-pct { font-size: 10px; font-family: 'IBM Plex Mono', monospace; color: var(--text-muted); white-space: nowrap; min-width: 26px; text-align: right; }
+
+  .swipe-hint { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; text-align: center; padding: 8px; }
+  .fab { position: absolute; bottom: 90px; right: 20px; width: 52px; height: 52px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; box-shadow: 0 4px 16px rgba(74,158,255,0.4); cursor: pointer; }
+  .nav-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,15,15,0.95); border-top: 1px solid var(--border); padding: 8px 0 20px; display: flex; justify-content: space-around; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 16px; cursor: pointer; }
+  .nav-icon { font-size: 20px; }
+  .nav-label { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .nav-item.active .nav-label { color: var(--accent); }
+  .nav-badge { position: relative; }
+  .badge { position: absolute; top: -4px; right: -8px; background: var(--red); color: #fff; font-size: 9px; font-family: 'IBM Plex Mono', monospace; padding: 1px 4px; border-radius: 8px; font-weight: 600; }
+  .spacer { height: 130px; }
+  .scroll-area { max-height: 680px; overflow-y: auto; scrollbar-width: none; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN 1 : BACKLOG -->
+<div>
+  <div class="phone-label">① Vue Backlog — Filtres + Échéance + Avancement</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="banner orange"><div class="banner-dot"></div>15 tâches à qualifier — <strong>Qualifier maintenant</strong></div>
+    <div class="header">
+      <div class="header-title">Backlog</div>
+      <div class="header-count">142 tâches</div>
+    </div>
+    <div class="search-bar"><span style="color:#555;font-size:14px;">🔍</span><span class="search-placeholder">Rechercher une tâche...</span></div>
+    <div class="filter-row">
+      <div class="filter-chip active">Tout</div>
+      <div class="filter-chip" style="border-color:rgba(255,68,68,0.4);color:#ff4444;">🔴 Haute</div>
+      <div class="filter-chip" style="border-color:rgba(255,153,0,0.4);color:#ff9900;">🟠 Moyenne</div>
+      <div class="filter-chip">Formation IA</div>
+      <div class="filter-chip">Recherche emploi</div>
+      <div class="filter-chip">Perso</div>
+      <div class="filter-chip">Délégué</div>
+      <div class="filter-chip" style="border-color:rgba(255,220,0,0.4);color:#ffdc00;">⚡ À qualifier</div>
+    </div>
+    <div class="sort-bar">
+      <span class="sort-label">Tri :</span>
+      <div class="sort-btn active">Échéance</div>
+      <div class="sort-btn">Priorité</div>
+      <div class="sort-btn">Projet</div>
+      <div class="sort-btn">Avancement</div>
+      <div class="sort-btn" style="color:#ffdc00;border-color:rgba(255,220,0,0.3);">⚡ Non qualifiées</div>
+    </div>
+
+    <div class="scroll-area">
+      <!-- EN RETARD -->
+      <div class="section-header"><span class="section-title">🔴 En retard</span><span class="section-count">3</span></div>
+      <div class="task-list">
+
+        <div class="task-item overdue">
+          <div class="priority-dot p1"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title"><span style="color:#ffdc00;font-size:12px;margin-right:4px;">⚡</span>Relancer prestataire livraison</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-date late">⚑ 28/05 — retard 2j</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:30%;background:#ff9900;"></div></div>
+              <span class="progress-pct">30%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+        <div class="task-item overdue">
+          <div class="priority-dot p2"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title"><span style="color:#ffdc00;font-size:12px;margin-right:4px;">⚡</span>Préparer questions entretien RH</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-date late">⚑ 26/05 — retard 4j</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:0%;background:#555;"></div></div>
+              <span class="progress-pct">0%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+      </div>
+
+      <!-- AUJOURD'HUI -->
+      <div class="section-header" style="margin-top:10px"><span class="section-title">📅 Aujourd'hui</span><span class="section-count">5</span></div>
+      <div class="task-list">
+
+        <div class="task-item today">
+          <div class="priority-dot p1"></div>
+          <div class="task-check checked"></div>
+          <div class="task-body">
+            <div class="task-title done">Envoyer CR réunion budget</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-date today-tag">⚑ 30/05</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:100%;background:#2ecc71;"></div></div>
+              <span class="progress-pct" style="color:#2ecc71;">100%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+        <div class="task-item today">
+          <div class="priority-dot p2"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Appeler Sophie — revue budget</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-date today-tag">⚑ 30/05 · 14h</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:60%;background:#4a9eff;"></div></div>
+              <span class="progress-pct">60%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+        <div class="task-item today">
+          <div class="priority-dot p3"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title"><span style="color:#ffdc00;font-size:12px;margin-right:4px;">⚡</span>Relire proposition prestataire</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Perso</span>
+              <span class="tag tag-date today-tag">⚑ 30/05</span>
+              <span class="tag tag-delegate">→ Martin</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:0%;background:#555;"></div></div>
+              <span class="progress-pct">0%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+      </div>
+
+      <!-- CETTE SEMAINE -->
+      <div class="section-header" style="margin-top:10px"><span class="section-title">📆 Cette semaine</span><span class="section-count">12</span></div>
+      <div class="task-list">
+
+        <div class="task-item">
+          <div class="priority-dot p2"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Préparer pitch — nouveau poste</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-date">⚑ 02/06</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:45%;background:#4a9eff;"></div></div>
+              <span class="progress-pct">45%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+        <div class="task-item">
+          <div class="priority-dot p3"></div>
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Finir module Python — fonctions</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-date">⚑ 01/06</span>
+            </div>
+            <div class="progress-row">
+              <div class="progress-bar"><div class="progress-fill" style="width:80%;background:#2ecc71;"></div></div>
+              <span class="progress-pct" style="color:#2ecc71;">80%</span>
+            </div>
+          </div>
+          <div class="task-arrow">›</div>
+        </div>
+
+      </div>
+
+      <div class="swipe-hint">← swipe gauche pour reporter · swipe droit pour clôturer →</div>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="fab">＋</div>
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item active"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="badge">15</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 2 : DÉTAIL TÂCHE -->
+<div>
+  <div class="phone-label">② Détail tâche — Avancement saisissable</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header">
+      <div style="color:#4a9eff;font-size:14px;cursor:pointer;">‹ Backlog</div>
+      <div style="color:#888;font-size:13px;font-family:'IBM Plex Mono',monospace;">TÂCHE</div>
+      <div style="color:#4a9eff;font-size:14px;">✏️</div>
+    </div>
+    <div style="padding:8px 20px 16px;">
+      <div style="font-size:20px;font-weight:600;color:#e8e8e8;line-height:1.3;margin-bottom:12px;">Appeler Sophie — revue budget</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="background:rgba(74,158,255,0.15);border:1px solid rgba(74,158,255,0.3);color:#4a9eff;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;">Active</div>
+        <div style="background:rgba(255,153,0,0.15);border:1px solid rgba(255,153,0,0.3);color:#ff9900;padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;">🟠 Moyenne</div>
+      </div>
+
+      <!-- Avancement -->
+      <div style="background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:12px 14px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;">AVANCEMENT</span>
+          <span style="font-size:18px;font-weight:600;color:#4a9eff;font-family:'IBM Plex Mono',monospace;">60%</span>
+        </div>
+        <div style="height:6px;background:#2e2e2e;border-radius:4px;overflow:hidden;margin-bottom:8px;">
+          <div style="width:60%;height:100%;background:#4a9eff;border-radius:4px;"></div>
+        </div>
+        <!-- Curseur de saisie rapide -->
+        <div style="display:flex;justify-content:space-between;gap:4px;">
+          <div style="flex:1;background:#222;border-radius:6px;padding:5px;text-align:center;font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;cursor:pointer;">0%</div>
+          <div style="flex:1;background:#222;border-radius:6px;padding:5px;text-align:center;font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;cursor:pointer;">25%</div>
+          <div style="flex:1;background:#4a9eff;border-radius:6px;padding:5px;text-align:center;font-size:11px;color:#fff;font-family:'IBM Plex Mono',monospace;cursor:pointer;">50%</div>
+          <div style="flex:1;background:#222;border-radius:6px;padding:5px;text-align:center;font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;cursor:pointer;">75%</div>
+          <div style="flex:1;background:#222;border-radius:6px;padding:5px;text-align:center;font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;cursor:pointer;">100%</div>
+        </div>
+        <div style="margin-top:6px;text-align:center;font-size:10px;color:#555;font-family:'IBM Plex Mono',monospace;">ou saisir une valeur libre →&nbsp;<span style="color:#4a9eff;">60</span>&nbsp;%</div>
+      </div>
+
+      <!-- Champs -->
+      <div style="display:flex;flex-direction:column;gap:1px;border-radius:10px;overflow:hidden;border:1px solid #2e2e2e;margin-bottom:10px;">
+        <div style="background:#1a1a1a;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#666;font-family:'IBM Plex Mono',monospace;">PROJET</span>
+          <span style="font-size:13px;color:#4a9eff;font-weight:500;">Formation IA</span>
+        </div>
+        <div style="height:1px;background:#2e2e2e;"></div>
+        <div style="background:#1a1a1a;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#666;font-family:'IBM Plex Mono',monospace;">DÉBUT</span>
+          <span style="font-size:13px;color:#e8e8e8;">30/05/2026</span>
+        </div>
+        <div style="height:1px;background:#2e2e2e;"></div>
+        <div style="background:#1a1a1a;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#666;font-family:'IBM Plex Mono',monospace;">ÉCHÉANCE</span>
+          <span style="font-size:13px;color:#4a9eff;font-weight:500;">30/05/2026 · 14h</span>
+        </div>
+        <div style="height:1px;background:#2e2e2e;"></div>
+        <div style="background:#1a1a1a;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#666;font-family:'IBM Plex Mono',monospace;">RESPONSABLE</span>
+          <span style="font-size:13px;color:#e8e8e8;">Moi</span>
+        </div>
+        <div style="height:1px;background:#2e2e2e;"></div>
+        <div style="background:#1a1a1a;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:12px;color:#666;font-family:'IBM Plex Mono',monospace;">PRÉDÉCESSEUR</span>
+          <span style="font-size:13px;color:#555;">— aucun</span>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div style="background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+        <div style="font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">NOTES</div>
+        <div style="font-size:13px;color:#888;line-height:1.5;">Demander validation budget Q3 avant vendredi. Préparer les 3 scénarios.</div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#2ecc71;border-radius:10px;padding:13px;text-align:center;font-size:14px;font-weight:600;color:#fff;cursor:pointer;">✓ Marquer comme terminée</div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:11px;text-align:center;font-size:13px;color:#ff9900;cursor:pointer;">Reporter</div>
+          <div style="flex:1;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:11px;text-align:center;font-size:13px;color:#ff4444;cursor:pointer;">Supprimer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 3 : CAPTURE VOCALE -->
+<div>
+  <div class="phone-label">③ Capture vocale + découpage IA</div>
+  <div class="phone" style="min-height:700px;">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header">
+      <div style="color:#888;font-size:14px;cursor:pointer;">Annuler</div>
+      <div style="font-size:15px;font-weight:600;color:#e8e8e8;">Nouvelle tâche</div>
+      <div style="color:#4a9eff;font-size:14px;font-weight:600;">Envoyer</div>
+    </div>
+    <div style="padding:8px 20px;">
+      <div style="background:#1a1a1a;border:1px solid #4a9eff;border-radius:12px;padding:14px;margin-bottom:12px;min-height:80px;">
+        <div style="font-size:15px;color:#e8e8e8;line-height:1.5;">Envoyer le CR à l'équipe, planifier la revue budget avec Sophie vendredi, relancer le prestataire sur la livraison</div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:10px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:rgba(255,68,68,0.15);border:2px solid #ff4444;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;box-shadow:0 0 20px rgba(255,68,68,0.3);">🎙️</div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:#ff4444;font-family:'IBM Plex Mono',monospace;margin-bottom:14px;">● EN COURS D'ÉCOUTE</div>
+      <div style="background:#1a1a1a;border:1px solid #2e2e2e;border-radius:12px;padding:14px;">
+        <div style="font-size:11px;color:#4a9eff;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span>✦</span> IA — 3 TÂCHES DÉTECTÉES · À VALIDER</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#222;border-radius:8px;padding:10px 12px;border-left:3px solid #4a9eff;">
+            <div style="font-size:13px;color:#e8e8e8;font-weight:500;margin-bottom:4px;">Envoyer CR réunion à l'équipe</div>
+            <div style="display:flex;gap:6px;">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-date today-tag">⚑ Aujourd'hui</span>
+            </div>
+          </div>
+          <div style="background:#222;border-radius:8px;padding:10px 12px;border-left:3px solid #4a9eff;">
+            <div style="font-size:13px;color:#e8e8e8;font-weight:500;margin-bottom:4px;">Planifier revue budget avec Sophie</div>
+            <div style="display:flex;gap:6px;">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-date">⚑ Vendredi</span>
+            </div>
+          </div>
+          <div style="background:#222;border-radius:8px;padding:10px 12px;border-left:3px solid #ff9900;">
+            <div style="font-size:13px;color:#e8e8e8;font-weight:500;margin-bottom:4px;">Relancer prestataire — livraison</div>
+            <div style="display:flex;gap:6px;">
+              <span class="tag" style="background:rgba(255,153,0,0.1);color:#ff9900;">? Projet</span>
+              <span class="tag" style="background:rgba(255,153,0,0.1);color:#ff9900;">? Échéance</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:12px;background:#4a9eff;border-radius:8px;padding:11px;text-align:center;font-size:13px;font-weight:600;color:#fff;cursor:pointer;">Envoyer en file "À qualifier"</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

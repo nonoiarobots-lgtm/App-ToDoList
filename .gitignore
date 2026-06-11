@@ -1,0 +1,32 @@
+# Archive source des documents (extraite dans docs/)
+files.zip
+
+# Dépendances
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Supabase
+.supabase/
+
+# Tests
+coverage/
+
+# PWA (générés par Serwist au build)
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js
+
+# Vercel
+.vercel/
+
+# OS / IDE
+.DS_Store
+Thumbs.db

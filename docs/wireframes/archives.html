@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archives — Wireframe Mobile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --border: #2e2e2e;
+    --text: #e8e8e8; --text-dim: #aaa; --text-muted: #555;
+    --p1: #ff4444; --p2: #ff9900; --p3: #4a9eff; --p4: #555;
+    --orange: #ff9900; --red: #ff4444; --green: #2ecc71; --accent: #4a9eff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1c1c1e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; font-family: 'IBM Plex Sans', sans-serif; gap: 32px; flex-wrap: wrap; }
+  .phone { width: 390px; background: var(--bg); border-radius: 44px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px #333; position: relative; min-height: 780px; }
+  .phone-label { color: #666; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-align: center; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .status-bar { padding: 14px 24px 8px; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); }
+  .header { padding: 8px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .header-title { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .header-count { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-muted); background: var(--surface2); padding: 4px 10px; border-radius: 20px; }
+  .search-bar { margin: 4px 16px 8px; background: var(--surface2); border-radius: 10px; padding: 9px 14px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); }
+  .search-placeholder { color: var(--text-muted); font-size: 14px; }
+  .filter-row { padding: 4px 16px 8px; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; white-space: nowrap; border: 1px solid var(--border); color: var(--text-dim); background: var(--surface); cursor: pointer; }
+  .filter-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .filter-chip.period { border-color: rgba(46,204,113,0.3); color: var(--green); }
+  .filter-chip.period.active { background: var(--green); border-color: var(--green); color: #fff; }
+  .sort-bar { padding: 0 16px 6px; display: flex; gap: 4px; align-items: center; }
+  .sort-label { font-size: 11px; color: var(--text-muted); margin-right: 4px; font-family: 'IBM Plex Mono', monospace; }
+  .sort-btn { padding: 3px 10px; border-radius: 4px; font-size: 11px; color: var(--text-dim); background: transparent; border: 1px solid transparent; cursor: pointer; font-family: 'IBM Plex Mono', monospace; }
+  .sort-btn.active { color: var(--text); border-color: var(--border); background: var(--surface2); }
+  .section-header { padding: 6px 16px 4px; display: flex; justify-content: space-between; align-items: center; }
+  .section-title { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'IBM Plex Mono', monospace; }
+  .section-count { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .task-list { padding: 0 16px; display: flex; flex-direction: column; gap: 4px; }
+  .task-item { background: var(--surface); border-radius: 10px; padding: 11px 12px; display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--border); cursor: pointer; opacity: 0.75; }
+  .task-item:active { opacity: 1; }
+  .task-check-done { width: 20px; height: 20px; border-radius: 50%; background: var(--green); border: 2px solid var(--green); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; }
+  .task-check-done::after { content: '✓'; color: #fff; font-size: 11px; font-weight: 700; }
+  .task-body { flex: 1; min-width: 0; }
+  .task-title { font-size: 14px; color: var(--text-dim); font-weight: 500; line-height: 1.3; text-decoration: line-through; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-meta { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; align-items: center; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .tag-project { background: rgba(74,158,255,0.08); color: #4a9eff; }
+  .tag-closed { background: rgba(46,204,113,0.08); color: var(--green); }
+  .restore-btn { font-size: 11px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; padding: 3px 8px; border: 1px solid rgba(74,158,255,0.3); border-radius: 6px; cursor: pointer; flex-shrink: 0; margin-top: 1px; white-space: nowrap; }
+  .scroll-area { max-height: 620px; overflow-y: auto; scrollbar-width: none; padding-bottom: 130px; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+  .spacer { height: 20px; }
+  .nav-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,15,15,0.95); border-top: 1px solid var(--border); padding: 8px 0 20px; display: flex; justify-content: space-around; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 16px; cursor: pointer; }
+  .nav-icon { font-size: 20px; }
+  .nav-label { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .nav-item.active .nav-label { color: var(--green); }
+  .nav-badge { position: relative; }
+  .nbadge { position: absolute; top: -4px; right: -8px; background: var(--red); color: #fff; font-size: 9px; font-family: 'IBM Plex Mono', monospace; padding: 1px 4px; border-radius: 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN 1 : ARCHIVES — VUE LISTE -->
+<div>
+  <div class="phone-label">① Archives — Vue liste avec filtres</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header">
+      <div class="header-title">Archives</div>
+      <div class="header-count">247 tâches</div>
+    </div>
+
+    <div class="search-bar">
+      <span style="color:#555;font-size:14px;">🔍</span>
+      <span class="search-placeholder">Rechercher dans les archives...</span>
+    </div>
+
+    <!-- Filtres projet + priorité -->
+    <div class="filter-row">
+      <div class="filter-chip active">Tout</div>
+      <div class="filter-chip" style="border-color:rgba(255,68,68,0.4);color:#ff4444;">🔴 Haute</div>
+      <div class="filter-chip" style="border-color:rgba(255,153,0,0.4);color:#ff9900;">🟠 Moyenne</div>
+      <div class="filter-chip">Formation IA</div>
+      <div class="filter-chip">Recherche emploi</div>
+      <div class="filter-chip">Perso</div>
+    </div>
+
+    <!-- Filtres période de clôture -->
+    <div class="filter-row">
+      <div class="filter-chip period active">Tout</div>
+      <div class="filter-chip period">Aujourd'hui</div>
+      <div class="filter-chip period">Cette semaine</div>
+      <div class="filter-chip period">Ce mois</div>
+      <div class="filter-chip period">Ce trimestre</div>
+    </div>
+
+    <div class="sort-bar">
+      <span class="sort-label">Tri :</span>
+      <div class="sort-btn active">Date clôture</div>
+      <div class="sort-btn">Projet</div>
+      <div class="sort-btn">Priorité</div>
+    </div>
+
+    <div class="scroll-area">
+
+      <!-- Section aujourd'hui -->
+      <div class="section-header">
+        <span class="section-title">Clôturées aujourd'hui</span>
+        <span class="section-count">3</span>
+      </div>
+      <div class="task-list">
+
+        <div class="task-item">
+          <div class="task-check-done"></div>
+          <div class="task-body">
+            <div class="task-title">Envoyer CR réunion budget</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-closed">✓ 30/05 · 9h12</span>
+            </div>
+          </div>
+          <div class="restore-btn">Restaurer</div>
+        </div>
+
+        <div class="task-item">
+          <div class="task-check-done"></div>
+          <div class="task-body">
+            <div class="task-title">Envoyer CV à cabinet Heidrick</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-closed">✓ 30/05 · 8h45</span>
+            </div>
+          </div>
+          <div class="restore-btn">Restaurer</div>
+        </div>
+
+        <div class="task-item">
+          <div class="task-check-done"></div>
+          <div class="task-body">
+            <div class="task-title">Préparer questions entretien RH</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-closed">✓ 30/05 · 7h58</span>
+            </div>
+          </div>
+          <div class="restore-btn">Restaurer</div>
+        </div>
+
+      </div>
+
+      <!-- Section cette semaine -->
+      <div class="section-header" style="margin-top:10px;">
+        <span class="section-title">Cette semaine</span>
+        <span class="section-count">12</span>
+      </div>
+      <div class="task-list">
+
+        <div class="task-item">
+          <div class="task-check-done"></div>
+          <div class="task-body">
+            <div class="task-title">Finir module Python — fonctions</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Formation IA</span>
+              <span class="tag tag-closed">✓ 29/05</span>
+            </div>
+          </div>
+          <div class="restore-btn">Restaurer</div>
+        </div>
+
+        <div class="task-item">
+          <div class="task-check-done"></div>
+          <div class="task-body">
+            <div class="task-title">Appeler chasseur de tête — premier contact</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-closed">✓ 28/05</span>
+            </div>
+          </div>
+          <div class="restore-btn">Restaurer</div>
+        </div>
+
+        <div class="task-item">
+          <div class="task-check-done"></div>
+          <div class="task-body">
+            <div class="task-title">Mettre à jour LinkedIn</div>
+            <div class="task-meta">
+              <span class="tag tag-project">Recherche emploi</span>
+              <span class="tag tag-closed">✓ 27/05</span>
+            </div>
+          </div>
+          <div class="restore-btn">Restaurer</div>
+        </div>
+
+      </div>
+
+      <div class="spacer"></div>
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="nbadge">3</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item active"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 2 : CONFIRMATION RESTAURATION -->
+<div>
+  <div class="phone-label">② Archives — Confirmation restauration</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:43</span><span>● ● ●</span></div>
+    <div class="header">
+      <div style="color:#4a9eff;font-size:14px;">‹ Archives</div>
+      <div style="font-size:15px;font-weight:600;color:#e8e8e8;">Restaurer</div>
+      <div style="width:40px;"></div>
+    </div>
+
+    <div style="padding: 20px 20px 0;">
+
+      <!-- Tâche à restaurer -->
+      <div style="background:#1a1a1a;border:1px solid #2e2e2e;border-radius:12px;padding:14px;margin-bottom:20px;">
+        <div style="font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">TÂCHE À RESTAURER</div>
+        <div style="font-size:16px;font-weight:600;color:#e8e8e8;margin-bottom:8px;">Envoyer CR réunion budget</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <span class="tag tag-project">Formation IA</span>
+          <span style="font-size:10px;padding:2px 7px;border-radius:4px;font-family:'IBM Plex Mono',monospace;background:rgba(46,204,113,0.08);color:#2ecc71;">✓ Clôturée le 30/05</span>
+        </div>
+      </div>
+
+      <!-- Message info -->
+      <div style="background:rgba(74,158,255,0.08);border:1px solid rgba(74,158,255,0.2);border-radius:10px;padding:12px 14px;margin-bottom:24px;font-size:13px;color:#aaa;line-height:1.5;">
+        La tâche sera restaurée dans ton backlog actif avec son statut <strong style="color:#e8e8e8;">Active</strong>. Tu pourras la re-qualifier si nécessaire.
+      </div>
+
+      <!-- Boutons -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:#2ecc71;border-radius:12px;padding:14px;text-align:center;font-size:15px;font-weight:600;color:#fff;cursor:pointer;">
+          ✓ Confirmer la restauration
+        </div>
+        <div style="background:#1a1a1a;border:1px solid #2e2e2e;border-radius:12px;padding:13px;text-align:center;font-size:14px;color:#aaa;cursor:pointer;">
+          Annuler
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="nbadge">3</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item active"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualification — Wireframe Mobile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --border: #2e2e2e;
+    --text: #e8e8e8; --text-dim: #aaa; --text-muted: #555;
+    --p1: #ff4444; --p2: #ff9900; --p3: #4a9eff; --p4: #555;
+    --orange: #ff9900; --red: #ff4444; --green: #2ecc71; --accent: #4a9eff;
+    --yellow: #ffdc00;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1c1c1e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; font-family: 'IBM Plex Sans', sans-serif; gap: 32px; flex-wrap: wrap; }
+  .phone { width: 390px; background: var(--bg); border-radius: 44px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px #333; position: relative; min-height: 780px; }
+  .phone-label { color: #666; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-align: center; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .status-bar { padding: 14px 24px 8px; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); }
+
+  /* HEADER */
+  .header { padding: 8px 20px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left { font-size: 14px; color: var(--accent); cursor: pointer; }
+  .header-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .header-skip { font-size: 13px; color: var(--text-muted); cursor: pointer; }
+
+  /* PROGRESS WIZARD */
+  .wizard-progress { padding: 0 20px 12px; }
+  .wizard-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 5px; }
+  .wizard-fill { height: 100%; background: var(--yellow); border-radius: 2px; }
+  .wizard-label { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .wizard-label span { color: var(--yellow); font-weight: 600; }
+
+  /* TÂCHE BRUTE */
+  .raw-task { margin: 0 16px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+  .raw-label { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; letter-spacing: 0.08em; }
+  .raw-text { font-size: 15px; color: var(--text); font-weight: 500; line-height: 1.4; }
+  .ai-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--accent); font-family: 'IBM Plex Mono', monospace; margin-top: 6px; }
+
+  /* SCROLL */
+  .scroll-area { max-height: 560px; overflow-y: auto; scrollbar-width: none; padding-bottom: 100px; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* CHAMPS */
+  .field-group { margin: 0 16px 8px; }
+  .field-label { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; margin-bottom: 5px; padding-left: 2px; }
+  .field-label .ai-pre { color: var(--accent); font-size: 10px; margin-left: 6px; }
+
+  .field-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+  }
+  .field-input.ai-filled { border-color: rgba(74,158,255,0.35); background: rgba(74,158,255,0.06); }
+  .field-input.ai-filled .field-value { color: var(--accent); }
+  .field-input.empty .field-value { color: var(--text-muted); }
+  .field-arrow { color: var(--text-muted); font-size: 12px; }
+
+  /* PRIORITÉ */
+  .priority-row { display: flex; gap: 6px; }
+  .prio-btn {
+    flex: 1; padding: 9px 4px; border-radius: 8px; text-align: center;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border); color: var(--text-muted);
+    background: var(--surface);
+  }
+  .prio-btn.selected-p1 { background: rgba(255,68,68,0.15); border-color: rgba(255,68,68,0.5); color: var(--red); }
+  .prio-btn.selected-p2 { background: rgba(255,153,0,0.15); border-color: rgba(255,153,0,0.5); color: var(--orange); }
+  .prio-btn.selected-p3 { background: rgba(74,158,255,0.15); border-color: rgba(74,158,255,0.5); color: var(--accent); }
+  .prio-btn.selected-p4 { background: rgba(85,85,85,0.2); border-color: #444; color: #888; }
+
+  /* AVANCEMENT */
+  .progress-quick { display: flex; gap: 4px; }
+  .pct-btn {
+    flex: 1; padding: 8px 4px; border-radius: 8px; text-align: center;
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid var(--border); color: var(--text-muted);
+    background: var(--surface); cursor: pointer;
+  }
+  .pct-btn.selected { background: var(--surface2); border-color: #aaa; color: var(--text); }
+
+  /* NOTES */
+  .notes-field {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 14px;
+    font-size: 13px; color: var(--text-muted);
+    min-height: 60px; line-height: 1.5;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  /* BOUTON PRINCIPAL */
+  .btn-main {
+    position: absolute; bottom: 80px; left: 16px; right: 16px;
+    background: var(--accent); border-radius: 12px;
+    padding: 15px; text-align: center;
+    font-size: 15px; font-weight: 600; color: #fff;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-main .next-count { font-size: 12px; opacity: 0.7; font-family: 'IBM Plex Mono', monospace; }
+
+  /* NAV */
+  .nav-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,15,15,0.95); border-top: 1px solid var(--border); padding: 8px 0 20px; display: flex; justify-content: space-around; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 16px; cursor: pointer; }
+  .nav-icon { font-size: 20px; }
+  .nav-label { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .nav-item.active .nav-label { color: var(--yellow); }
+  .nav-badge { position: relative; }
+  .nbadge { position: absolute; top: -4px; right: -8px; background: var(--red); color: #fff; font-size: 9px; font-family: 'IBM Plex Mono', monospace; padding: 1px 4px; border-radius: 8px; font-weight: 600; }
+
+  .divider { height: 1px; background: var(--border); margin: 6px 16px; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN 1 : TÂCHE AVEC PRÉ-REMPLISSAGE IA -->
+<div>
+  <div class="phone-label">① Qualification — Pré-remplissage IA</div>
+  <div class="phone">
+    <div class="status-bar"><span>12:00</span><span>● ● ●</span></div>
+
+    <div class="header">
+      <div class="header-left">Annuler</div>
+      <div class="header-title">⚡ Qualification</div>
+      <div class="header-skip">Passer</div>
+    </div>
+
+    <!-- Barre de progression wizard -->
+    <div class="wizard-progress">
+      <div class="wizard-track"><div class="wizard-fill" style="width: 13%;"></div></div>
+      <div class="wizard-label">Tâche <span>2</span> sur 15</div>
+    </div>
+
+    <!-- Tâche brute -->
+    <div class="raw-task">
+      <div class="raw-label">TÂCHE CAPTURÉE</div>
+      <div class="raw-text">Planifier la revue budget avec Sophie vendredi</div>
+      <div class="ai-badge">✦ IA — pré-qualifiée · à valider</div>
+    </div>
+
+    <div class="scroll-area">
+
+      <!-- Projet -->
+      <div class="field-group">
+        <div class="field-label">PROJET <span class="ai-pre">✦ IA</span></div>
+        <div class="field-input ai-filled">
+          <span class="field-value">Formation IA</span>
+          <span class="field-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Priorité -->
+      <div class="field-group">
+        <div class="field-label">PRIORITÉ <span class="ai-pre">✦ IA</span></div>
+        <div class="priority-row">
+          <div class="prio-btn">🔴 Haute</div>
+          <div class="prio-btn selected-p2">🟠 Moyenne</div>
+          <div class="prio-btn">🔵 Basse</div>
+          <div class="prio-btn">— Aucune</div>
+        </div>
+      </div>
+
+      <!-- Date début -->
+      <div class="field-group">
+        <div class="field-label">DATE DE DÉBUT</div>
+        <div class="field-input empty">
+          <span class="field-value">Choisir une date...</span>
+          <span class="field-arrow">📅</span>
+        </div>
+      </div>
+
+      <!-- Date échéance -->
+      <div class="field-group">
+        <div class="field-label">ÉCHÉANCE <span class="ai-pre">✦ IA</span></div>
+        <div class="field-input ai-filled">
+          <span class="field-value">Vendredi 30/05/2026</span>
+          <span class="field-arrow">📅</span>
+        </div>
+      </div>
+
+      <!-- Responsable -->
+      <div class="field-group">
+        <div class="field-label">RESPONSABLE</div>
+        <div class="field-input">
+          <span class="field-value">Moi</span>
+          <span class="field-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Prédécesseur -->
+      <div class="field-group">
+        <div class="field-label">PRÉDÉCESSEUR <span style="color:#555;font-size:10px;">· optionnel</span></div>
+        <div class="field-input empty">
+          <span class="field-value">Aucun</span>
+          <span class="field-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Avancement -->
+      <div class="field-group">
+        <div class="field-label">AVANCEMENT</div>
+        <div class="progress-quick">
+          <div class="pct-btn selected">0%</div>
+          <div class="pct-btn">25%</div>
+          <div class="pct-btn">50%</div>
+          <div class="pct-btn">75%</div>
+          <div class="pct-btn">100%</div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="field-group">
+        <div class="field-label">NOTES <span style="color:#555;font-size:10px;">· optionnel</span></div>
+        <div class="notes-field">Ajouter une note...</div>
+      </div>
+
+    </div>
+
+    <!-- Bouton enregistrer & suivant -->
+    <div class="btn-main">
+      Enregistrer & suivant <span class="next-count">13 restantes</span>
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item active"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="nbadge">15</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 2 : TÂCHE SANS PRÉ-REMPLISSAGE IA -->
+<div>
+  <div class="phone-label">② Qualification — Sans pré-remplissage IA</div>
+  <div class="phone">
+    <div class="status-bar"><span>12:02</span><span>● ● ●</span></div>
+
+    <div class="header">
+      <div class="header-left">Annuler</div>
+      <div class="header-title">⚡ Qualification</div>
+      <div class="header-skip">Passer</div>
+    </div>
+
+    <div class="wizard-progress">
+      <div class="wizard-track"><div class="wizard-fill" style="width: 20%;"></div></div>
+      <div class="wizard-label">Tâche <span>3</span> sur 15</div>
+    </div>
+
+    <!-- Tâche brute saisie manuellement -->
+    <div class="raw-task">
+      <div class="raw-label">TÂCHE CAPTURÉE</div>
+      <div class="raw-text">Rappeler Martin</div>
+      <div style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#555;font-family:'IBM Plex Mono',monospace;margin-top:6px;">saisie manuelle · non pré-qualifiée</div>
+    </div>
+
+    <div class="scroll-area">
+
+      <!-- Projet -->
+      <div class="field-group">
+        <div class="field-label">PROJET</div>
+        <div class="field-input empty">
+          <span class="field-value">Choisir un projet...</span>
+          <span class="field-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Priorité -->
+      <div class="field-group">
+        <div class="field-label">PRIORITÉ</div>
+        <div class="priority-row">
+          <div class="prio-btn">🔴 Haute</div>
+          <div class="prio-btn">🟠 Moyenne</div>
+          <div class="prio-btn">🔵 Basse</div>
+          <div class="prio-btn selected-p4">— Aucune</div>
+        </div>
+      </div>
+
+      <!-- Date début -->
+      <div class="field-group">
+        <div class="field-label">DATE DE DÉBUT</div>
+        <div class="field-input empty">
+          <span class="field-value">Choisir une date...</span>
+          <span class="field-arrow">📅</span>
+        </div>
+      </div>
+
+      <!-- Date échéance -->
+      <div class="field-group">
+        <div class="field-label">ÉCHÉANCE</div>
+        <div class="field-input empty">
+          <span class="field-value">Choisir une date...</span>
+          <span class="field-arrow">📅</span>
+        </div>
+      </div>
+
+      <!-- Responsable -->
+      <div class="field-group">
+        <div class="field-label">RESPONSABLE</div>
+        <div class="field-input">
+          <span class="field-value">Moi</span>
+          <span class="field-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Prédécesseur -->
+      <div class="field-group">
+        <div class="field-label">PRÉDÉCESSEUR <span style="color:#555;font-size:10px;">· optionnel</span></div>
+        <div class="field-input empty">
+          <span class="field-value">Aucun</span>
+          <span class="field-arrow">›</span>
+        </div>
+      </div>
+
+      <!-- Avancement -->
+      <div class="field-group">
+        <div class="field-label">AVANCEMENT</div>
+        <div class="progress-quick">
+          <div class="pct-btn selected">0%</div>
+          <div class="pct-btn">25%</div>
+          <div class="pct-btn">50%</div>
+          <div class="pct-btn">75%</div>
+          <div class="pct-btn">100%</div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="field-group">
+        <div class="field-label">NOTES <span style="color:#555;font-size:10px;">· optionnel</span></div>
+        <div class="notes-field">Ajouter une note...</div>
+      </div>
+
+    </div>
+
+    <div class="btn-main">
+      Enregistrer & suivant <span class="next-count">12 restantes</span>
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item active"><span class="nav-badge"><span class="nav-icon">⚡</span><span class="nbadge">13</span></span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding — Wireframe Mobile</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --border: #2e2e2e;
+    --text: #e8e8e8; --text-dim: #aaa; --text-muted: #555;
+    --green: #2ecc71; --accent: #4a9eff; --orange: #ff9900; --red: #ff4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1c1c1e; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 40px 20px; font-family: 'IBM Plex Sans', sans-serif; gap: 32px; flex-wrap: wrap; }
+  .phone { width: 390px; background: var(--bg); border-radius: 44px; overflow: hidden; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px #333; position: relative; min-height: 780px; }
+  .phone-label { color: #666; font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-align: center; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .status-bar { padding: 14px 24px 8px; display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text); }
+
+  /* WIZARD PROGRESS */
+  .wizard-progress { padding: 4px 20px 16px; }
+  .steps { display: flex; gap: 4px; margin-bottom: 6px; }
+  .step { flex: 1; height: 3px; border-radius: 2px; background: var(--border); }
+  .step.done { background: var(--accent); }
+  .step.active { background: var(--accent); opacity: 0.5; }
+  .wizard-label { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; }
+  .wizard-label span { color: var(--accent); font-weight: 600; }
+
+  /* HEADER */
+  .header { padding: 12px 20px 4px; display: flex; justify-content: space-between; align-items: center; }
+  .header-skip { font-size: 13px; color: var(--text-muted); cursor: pointer; }
+
+  /* CONTENT */
+  .content { padding: 0 20px; }
+  .step-emoji { font-size: 36px; margin-bottom: 12px; display: block; }
+  .step-title { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; margin-bottom: 6px; }
+  .step-desc { font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-bottom: 24px; }
+
+  /* CHAMPS */
+  .field-group { margin-bottom: 12px; }
+  .field-label { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; margin-bottom: 5px; }
+  .field-input { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px; font-size: 15px; color: var(--text); width: 100%; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .field-input.filled { border-color: rgba(74,158,255,0.35); }
+  .field-input .placeholder { color: var(--text-muted); font-size: 14px; }
+  .field-input .value { color: var(--text); font-size: 14px; }
+  .field-arrow { color: var(--text-muted); font-size: 12px; }
+
+  /* PROJETS */
+  .project-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .project-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px; display: flex; align-items: center; gap: 10px; }
+  .project-color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; cursor: pointer; }
+  .project-name-input { flex: 1; font-size: 14px; color: var(--text); background: transparent; border: none; outline: none; font-family: 'IBM Plex Sans', sans-serif; }
+  .project-name-input::placeholder { color: var(--text-muted); }
+  .project-delete { color: var(--text-muted); font-size: 16px; cursor: pointer; flex-shrink: 0; }
+
+  .add-project-btn { border: 1px dashed var(--border); border-radius: 10px; padding: 11px 14px; text-align: center; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+
+  /* COULEURS */
+  .color-picker { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+  .color-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .color-swatch.selected::after { content: '✓'; color: #fff; font-weight: 700; }
+  .color-swatch.used { opacity: 0.25; cursor: not-allowed; }
+
+  /* HORAIRES */
+  .time-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .time-label { font-size: 13px; color: var(--text-dim); flex: 1; }
+  .time-value { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 15px; font-family: 'IBM Plex Mono', monospace; color: var(--text); font-weight: 600; cursor: pointer; min-width: 70px; text-align: center; }
+
+  /* BOUTON PRINCIPAL */
+  .btn-main { position: absolute; bottom: 80px; left: 20px; right: 20px; background: var(--accent); border-radius: 12px; padding: 15px; text-align: center; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; }
+
+  /* NAV */
+  .nav-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(15,15,15,0.95); border-top: 1px solid var(--border); padding: 8px 0 20px; display: flex; justify-content: space-around; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 4px 16px; }
+  .nav-icon { font-size: 20px; opacity: 0.3; }
+  .nav-label { font-size: 10px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; opacity: 0.3; }
+
+  .scroll-area { max-height: 580px; overflow-y: auto; scrollbar-width: none; padding-bottom: 110px; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+
+  /* SETTINGS POST-ONBOARDING */
+  .settings-section { margin: 0 16px 16px; }
+  .settings-title { font-size: 11px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 2px 6px; }
+  .settings-block { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .settings-row { padding: 13px 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-label { font-size: 14px; color: var(--text); }
+  .settings-row-value { font-size: 13px; color: var(--text-muted); font-family: 'IBM Plex Mono', monospace; display: flex; align-items: center; gap: 6px; }
+  .settings-arrow { color: var(--text-muted); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- ÉCRAN 1 : BIENVENUE -->
+<div>
+  <div class="phone-label">① Onboarding — Bienvenue</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header"><div></div><div class="header-skip">Passer</div></div>
+    <div class="wizard-progress">
+      <div class="steps">
+        <div class="step active"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+      </div>
+      <div class="wizard-label">Étape <span>1</span> sur 5</div>
+    </div>
+    <div class="content">
+      <span class="step-emoji">👋</span>
+      <div class="step-title">Bienvenue</div>
+      <div class="step-desc">Ton outil de gestion de tâches personnel. 5 minutes pour tout configurer, et c'est prêt.</div>
+
+      <div class="field-group">
+        <div class="field-label">TON PRÉNOM</div>
+        <div class="field-input filled"><span class="value">Jean-Pierre</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">MOT DE PASSE</div>
+        <div class="field-input"><span class="placeholder">Choisir un mot de passe...</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">CONFIRMER LE MOT DE PASSE</div>
+        <div class="field-input"><span class="placeholder">Confirmer...</span></div>
+      </div>
+    </div>
+    <div class="btn-main">Suivant →</div>
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-icon">⚡</span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 2 : EMAIL -->
+<div>
+  <div class="phone-label">② Onboarding — Email & login</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header"><div style="color:#4a9eff;font-size:14px;">‹ Retour</div><div class="header-skip">Passer</div></div>
+    <div class="wizard-progress">
+      <div class="steps">
+        <div class="step done"></div>
+        <div class="step active"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+      </div>
+      <div class="wizard-label">Étape <span>2</span> sur 5</div>
+    </div>
+    <div class="content">
+      <span class="step-emoji">📧</span>
+      <div class="step-title">Notifications</div>
+      <div class="step-desc">L'app t'envoie un email de secours si tu rates une notification. Renseigne ton adresse Gmail.</div>
+      <div class="field-group">
+        <div class="field-label">ADRESSE EMAIL</div>
+        <div class="field-input filled"><span class="value">jeanpierre@gmail.com</span></div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">LOGIN (identifiant de connexion)</div>
+        <div class="field-input filled"><span class="value">jeanpierre</span></div>
+      </div>
+    </div>
+    <div class="btn-main">Suivant →</div>
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-icon">⚡</span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 3 : PROJETS -->
+<div>
+  <div class="phone-label">③ Onboarding — Projets & couleurs</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header"><div style="color:#4a9eff;font-size:14px;">‹ Retour</div><div class="header-skip">Passer</div></div>
+    <div class="wizard-progress">
+      <div class="steps">
+        <div class="step done"></div>
+        <div class="step done"></div>
+        <div class="step active"></div>
+        <div class="step"></div>
+        <div class="step"></div>
+      </div>
+      <div class="wizard-label">Étape <span>3</span> sur 5</div>
+    </div>
+    <div class="content">
+      <span class="step-emoji">📁</span>
+      <div class="step-title">Tes projets</div>
+      <div class="step-desc">Crée entre 3 et 5 projets. Chaque couleur est unique — l'app en propose une par défaut.</div>
+    </div>
+
+    <div style="padding: 0 20px;">
+      <div class="project-list">
+        <div class="project-row">
+          <div class="project-color-dot" style="background:#4a9eff;"></div>
+          <input class="project-name-input" type="text" value="Formation IA" />
+          <div class="project-delete">×</div>
+        </div>
+        <div class="project-row">
+          <div class="project-color-dot" style="background:#2ecc71;"></div>
+          <input class="project-name-input" type="text" value="Recherche emploi" />
+          <div class="project-delete">×</div>
+        </div>
+        <div class="project-row">
+          <div class="project-color-dot" style="background:#ff9900;"></div>
+          <input class="project-name-input" type="text" value="Perso" />
+          <div class="project-delete">×</div>
+        </div>
+        <div class="project-row" style="border-style:dashed;opacity:0.6;">
+          <div class="project-color-dot" style="background:#9b59b6;"></div>
+          <input class="project-name-input" type="text" placeholder="Nouveau projet..." />
+          <div class="project-delete" style="opacity:0;">×</div>
+        </div>
+      </div>
+
+      <!-- Palette couleurs + icônes disponibles -->
+      <div style="font-size:11px;color:#555;font-family:'IBM Plex Mono',monospace;margin-bottom:8px;">COULEURS & ICÔNES DISPONIBLES · choisies disparaissent</div>
+      <div style="margin-bottom:6px;">
+        <div style="font-size:10px;color:#555;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">COULEURS</div>
+        <div class="color-grid" style="margin-bottom:10px;">
+          <div class="color-swatch" style="background:#9b59b6;border:2px solid #fff;"></div>
+          <div class="color-swatch" style="background:#e74c3c;"></div>
+          <div class="color-swatch" style="background:#1abc9c;"></div>
+          <div class="color-swatch" style="background:#f39c12;"></div>
+          <div class="color-swatch" style="background:#e67e22;"></div>
+          <div class="color-swatch" style="background:#95a5a6;"></div>
+          <div class="color-swatch" style="background:#d35400;"></div>
+        </div>
+        <div style="font-size:10px;color:#555;font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">ICÔNES (si toutes les couleurs sont prises)</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">🏠</div>
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⭐</div>
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">🎯</div>
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">💼</div>
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">📌</div>
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">🔖</div>
+          <div style="width:28px;height:28px;border-radius:8px;background:#1a1a1a;border:1px solid #2e2e2e;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;">⚙️</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-main">Suivant →</div>
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-icon">⚡</span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 4 : HORAIRES -->
+<div>
+  <div class="phone-label">④ Onboarding — Horaires notifications</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div class="header"><div style="color:#4a9eff;font-size:14px;">‹ Retour</div><div class="header-skip">Passer</div></div>
+    <div class="wizard-progress">
+      <div class="steps">
+        <div class="step done"></div>
+        <div class="step done"></div>
+        <div class="step done"></div>
+        <div class="step active"></div>
+        <div class="step"></div>
+      </div>
+      <div class="wizard-label">Étape <span>4</span> sur 5</div>
+    </div>
+    <div class="content">
+      <span class="step-emoji">🔔</span>
+      <div class="step-title">Tes horaires</div>
+      <div class="step-desc">3 notifications par jour. Tu peux modifier ces horaires à tout moment dans les paramètres.</div>
+
+      <div style="background:#1a1a1a;border:1px solid #2e2e2e;border-radius:12px;padding:14px;margin-bottom:16px;">
+        <div class="time-row">
+          <div>
+            <div style="font-size:13px;color:#e8e8e8;font-weight:500;">☀️ Briefing matin</div>
+            <div style="font-size:11px;color:#555;margin-top:2px;">Tâches du jour + retards</div>
+          </div>
+          <div class="time-value">08:00</div>
+        </div>
+        <div style="height:1px;background:#2e2e2e;margin:10px 0;"></div>
+        <div class="time-row">
+          <div>
+            <div style="font-size:13px;color:#e8e8e8;font-weight:500;">⚡ Qualification</div>
+            <div style="font-size:11px;color:#555;margin-top:2px;">Tâches à caractériser</div>
+          </div>
+          <div class="time-value">12:00</div>
+        </div>
+        <div style="height:1px;background:#2e2e2e;margin:10px 0;"></div>
+        <div class="time-row">
+          <div>
+            <div style="font-size:13px;color:#e8e8e8;font-weight:500;">🔴 Relance retards</div>
+            <div style="font-size:11px;color:#555;margin-top:2px;">Tâches en retard à traiter</div>
+          </div>
+          <div class="time-value">18:00</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(74,158,255,0.08);border:1px solid rgba(74,158,255,0.2);border-radius:10px;padding:11px 14px;font-size:12px;color:#aaa;line-height:1.5;">
+        ⚡ Alerte à <strong style="color:#e8e8e8;">15 tâches</strong> non qualifiées (bannière orange) et <strong style="color:#e8e8e8;">20 tâches</strong> (bannière rouge).
+      </div>
+    </div>
+
+    <div class="btn-main">Suivant →</div>
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon">☀️</span><span class="nav-label">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon">📋</span><span class="nav-label">Backlog</span></div>
+      <div class="nav-item"><span class="nav-icon">⚡</span><span class="nav-label">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon">📁</span><span class="nav-label">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉCRAN 5 : PARAMÈTRES (post-onboarding) -->
+<div>
+  <div class="phone-label">⑤ Paramètres — Accessible après onboarding</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>● ● ●</span></div>
+    <div style="padding:12px 20px 16px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:22px;font-weight:600;color:#e8e8e8;">Paramètres</div>
+    </div>
+
+    <div class="scroll-area">
+
+      <div class="settings-section">
+        <div class="settings-title">Compte</div>
+        <div class="settings-block">
+          <div class="settings-row">
+            <span class="settings-row-label">Prénom</span>
+            <span class="settings-row-value">Jean-Pierre <span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">Login</span>
+            <span class="settings-row-value">jeanpierre <span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">Mot de passe</span>
+            <span class="settings-row-value">Modifier <span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">Email de secours</span>
+            <span class="settings-row-value">jeanpierre@gmail.com <span class="settings-arrow">›</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Projets</div>
+        <div class="settings-block">
+          <div class="settings-row">
+            <span style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#4a9eff;"></div><span class="settings-row-label">Formation IA</span></span>
+            <span class="settings-row-value"><span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#2ecc71;"></div><span class="settings-row-label">Recherche emploi</span></span>
+            <span class="settings-row-value"><span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span style="display:flex;align-items:center;gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:#ff9900;"></div><span class="settings-row-label">Perso</span></span>
+            <span class="settings-row-value"><span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row" style="cursor:pointer;">
+            <span style="color:#4a9eff;font-size:14px;">+ Ajouter un projet</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Notifications</div>
+        <div class="settings-block">
+          <div class="settings-row">
+            <span class="settings-row-label">☀️ Briefing matin</span>
+            <span class="settings-row-value">08:00 <span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">⚡ Qualification</span>
+            <span class="settings-row-value">12:00 <span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">🔴 Relance retards</span>
+            <span class="settings-row-value">18:00 <span class="settings-arrow">›</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Seuils d'alerte</div>
+        <div class="settings-block">
+          <div class="settings-row">
+            <span class="settings-row-label">🟠 Bannière orange</span>
+            <span class="settings-row-value">15 tâches <span class="settings-arrow">›</span></span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-row-label">🔴 Bannière rouge</span>
+            <span class="settings-row-value">20 tâches <span class="settings-arrow">›</span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav-bar">
+      <div class="nav-item"><span class="nav-icon" style="opacity:1;">☀️</span><span class="nav-label" style="opacity:1;">Aujourd'hui</span></div>
+      <div class="nav-item"><span class="nav-icon" style="opacity:1;">📋</span><span class="nav-label" style="opacity:1;">Backlog</span></div>
+      <div class="nav-item"><span class="nav-icon" style="opacity:1;">⚡</span><span class="nav-label" style="opacity:1;">À qualifier</span></div>
+      <div class="nav-item"><span class="nav-icon" style="opacity:1;">📁</span><span class="nav-label" style="opacity:1;">Archives</span></div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
