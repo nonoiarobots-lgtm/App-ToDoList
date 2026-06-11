@@ -1,6 +1,6 @@
 # Besoins utilisateurs — Outil personnel de gestion de tâches
-**Version 2 — Post-arbitrages techniques**
-*Dernière mise à jour : 30 mai 2026*
+**Version 3 — Suppression du champ login (cadrage §19.5)**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -205,7 +205,7 @@
 **En tant qu'utilisateur**, je veux un onboarding guidé à la première ouverture.
 
 **Critères d'acceptation** :
-- 5 étapes : compte / email+login / projets / horaires / confirmation
+- 5 étapes : compte / email / projets / horaires / confirmation
 - Navigation libre entre étapes
 - Couleur unique par projet (disparaît de la palette)
 - Icônes si couleurs épuisées
@@ -220,7 +220,7 @@
 
 **Critères d'acceptation** :
 - Accessible depuis le menu ⚙️
-- Modifiable : prénom, login, mot de passe, email, projets, horaires, seuils d'alerte
+- Modifiable : prénom, mot de passe, email, projets, horaires, seuils d'alerte
 
 **Priorité** : Indispensable
 

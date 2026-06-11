@@ -1,6 +1,6 @@
 # Tests TDD — Outil personnel de gestion de tâches
-**Version 1 — Jest + Testing Library + Supabase mock**
-*Dernière mise à jour : 30 mai 2026*
+**Version 2 — Auth par email (175 tests, cadrage §19.5)**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -2551,7 +2551,7 @@ describe('POST /api/auth/register', () => {
       .post('/api/auth/register')
       .set(headers)
       .send({
-        prenom: 'Jean-Pierre', login: 'jeanpierre',
+        prenom: 'Jean-Pierre',
         email: 'jp@gmail.com', password: 'MotDePasse123!',
         heure_briefing: '08:00', heure_qualification: '12:00', heure_retards: '18:00',
       });
@@ -2570,36 +2570,17 @@ describe('POST /api/auth/register', () => {
     const res = await request(BASE_URL)
       .post('/api/auth/register')
       .set(headers)
-      .send({ prenom: 'Test', login: 'test2', email: 'jp@gmail.com', password: 'MotDePasse123!' });
+      .send({ prenom: 'Test', email: 'jp@gmail.com', password: 'MotDePasse123!' });
 
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('EMAIL_DEJA_UTILISE');
-  });
-
-  it('retourne 400 si login déjà utilisé', async () => {
-    mockSupabase.auth.signUp.mockResolvedValue({
-      data: { user: { id: 'uuid-new' }, session: { access_token: 'jwt' } },
-      error: null,
-    });
-    mockSupabase.insert.mockResolvedValue({
-      data: null,
-      error: { code: '23505', message: 'preferences_login_unique' },
-    });
-
-    const res = await request(BASE_URL)
-      .post('/api/auth/register')
-      .set(headers)
-      .send({ prenom: 'Test', login: 'jeanpierre', email: 'autre@gmail.com', password: 'MotDePasse123!' });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error.code).toBe('LOGIN_DEJA_UTILISE');
   });
 
   it('retourne 400 si champs requis manquants', async () => {
     const res = await request(BASE_URL)
       .post('/api/auth/register')
       .set(headers)
-      .send({ email: 'jp@gmail.com' }); // prenom, login, password manquants
+      .send({ email: 'jp@gmail.com' }); // prenom, password manquants
 
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
@@ -2608,11 +2589,7 @@ describe('POST /api/auth/register', () => {
 
 describe('POST /api/auth/login', () => {
 
-  it('connecte un utilisateur avec login + mot de passe corrects', async () => {
-    // Résoudre login → email
-    mockSupabase.select.mockResolvedValue({
-      data: [{ email: 'jp@gmail.com' }], error: null,
-    });
+  it('connecte un utilisateur avec email + mot de passe corrects', async () => {
     mockSupabase.auth.signInWithPassword.mockResolvedValue({
       data: { session: { access_token: 'jwt-valid' } }, error: null,
     });
@@ -2620,15 +2597,16 @@ describe('POST /api/auth/login', () => {
     const res = await request(BASE_URL)
       .post('/api/auth/login')
       .set(headers)
-      .send({ login: 'jeanpierre', password: 'MotDePasse123!' });
+      .send({ email: 'jp@gmail.com', password: 'MotDePasse123!' });
 
     expect(res.status).toBe(200);
     expect(res.body.token).toBe('jwt-valid');
     expect(res.body.preferences).toBeDefined();
   });
 
-  it('retourne 401 si mot de passe incorrect', async () => {
-    mockSupabase.select.mockResolvedValue({ data: [{ email: 'jp@gmail.com' }], error: null });
+  it('retourne 401 si email inconnu ou mot de passe incorrect', async () => {
+    // Supabase Auth renvoie la même erreur générique dans les deux cas
+    // (pas d'énumération d'utilisateurs possible)
     mockSupabase.auth.signInWithPassword.mockResolvedValue({
       data: null,
       error: { message: 'Invalid login credentials' },
@@ -2637,29 +2615,17 @@ describe('POST /api/auth/login', () => {
     const res = await request(BASE_URL)
       .post('/api/auth/login')
       .set(headers)
-      .send({ login: 'jeanpierre', password: 'mauvais_mdp' });
+      .send({ email: 'jp@gmail.com', password: 'mauvais_mdp' });
 
     expect(res.status).toBe(401);
     expect(res.body.error.code).toBe('UNAUTHORIZED');
   });
 
-  it('retourne 404 si login inexistant', async () => {
-    mockSupabase.select.mockResolvedValue({ data: [], error: null });
-
+  it('retourne 400 si email ou password manquant', async () => {
     const res = await request(BASE_URL)
       .post('/api/auth/login')
       .set(headers)
-      .send({ login: 'login_inexistant', password: 'MotDePasse123!' });
-
-    expect(res.status).toBe(404);
-    expect(res.body.error.code).toBe('LOGIN_NOT_FOUND');
-  });
-
-  it('retourne 400 si login ou password manquant', async () => {
-    const res = await request(BASE_URL)
-      .post('/api/auth/login')
-      .set(headers)
-      .send({ login: 'jeanpierre' }); // password manquant
+      .send({ email: 'jp@gmail.com' }); // password manquant
 
     expect(res.status).toBe(400);
   });
@@ -3034,7 +3000,7 @@ const headers = { Authorization: 'Bearer mock-jwt-token', 'Content-Type': 'appli
 
 const preferencesBase = {
   id: 'uuid-pref', user_id: 'user-uuid',
-  prenom: 'Jean-Pierre', login: 'jeanpierre',
+  prenom: 'Jean-Pierre',
   heure_briefing: '08:00', heure_qualification: '12:00', heure_retards: '18:00',
   seuil_orange: 15, seuil_rouge: 20,
 };
@@ -3485,7 +3451,7 @@ describe('Gestion des fuseaux horaires', () => {
       .post('/api/auth/register')
       .set({ 'Content-Type': 'application/json' })
       .send({
-        prenom: 'Jean-Pierre', login: 'jeanpierre',
+        prenom: 'Jean-Pierre',
         email: 'jp@gmail.com', password: 'MotDePasse123!',
         timezone: 'Europe/Paris', // détecté côté client
         heure_briefing: '08:00', heure_qualification: '12:00', heure_retards: '18:00',

@@ -1,6 +1,6 @@
 # Inventaire des écrans — Outil personnel de gestion de tâches
-**Version 2 — Post-arbitrages techniques**
-*Dernière mise à jour : 30 mai 2026*
+**Version 3 — Suppression du champ login (cadrage §19.5)**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -35,7 +35,7 @@ Accès transverse
 | État | Description |
 |---|---|
 | Étape 1 | Bienvenue — prénom + mot de passe + confirmation |
-| Étape 2 | Email + login |
+| Étape 2 | Email |
 | Étape 3 | Projets + couleurs/icônes |
 | Étape 4 | Horaires des 3 notifications |
 | Étape 5 | Confirmation — récapitulatif |
@@ -190,7 +190,7 @@ Accès transverse
 
 | Section | Contenu |
 |---|---|
-| Compte | Prénom, login, mot de passe, email |
+| Compte | Prénom, mot de passe, email |
 | Projets | Liste + ajout + modification couleur/icône |
 | Notifications | Horaires des 3 flux |
 | Seuils d'alerte | Bannière orange + rouge (configurables) |

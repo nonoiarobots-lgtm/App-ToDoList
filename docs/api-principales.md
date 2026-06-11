@@ -1,6 +1,6 @@
 # API principales — Outil personnel de gestion de tâches
-**Version 1 — Next.js + Supabase**
-*Dernière mise à jour : 30 mai 2026*
+**Version 2 — Connexion par email, suppression du champ login (cadrage §19.5)**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -42,7 +42,6 @@ Création de compte + préférences initiales.
 ```json
 {
   "prenom": "Jean-Pierre",
-  "login": "jeanpierre",
   "email": "jp@gmail.com",
   "password": "••••••••",
   "heure_briefing": "08:00",
@@ -71,15 +70,14 @@ Création de compte + préférences initiales.
 **Body**
 ```json
 {
-  "login": "jeanpierre",
+  "email": "jp@gmail.com",
   "password": "••••••••"
 }
 ```
 
 **Logique**
-1. Résoudre le login → email (lookup dans `preferences`)
-2. Authentifier via Supabase Auth (`supabase.auth.signInWithPassword`)
-3. Retourner le token JWT + les préférences utilisateur
+1. Authentifier via Supabase Auth (`supabase.auth.signInWithPassword`)
+2. Retourner le token JWT + les préférences utilisateur
 
 **Réponse 200**
 ```json

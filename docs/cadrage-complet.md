@@ -1,6 +1,6 @@
 # Cadrage — Outil personnel de gestion de tâches
-**Version 4 — Post-design, validation expert et arbitrages techniques**
-*Dernière mise à jour : 30 mai 2026*
+**Version 5 — Suppression du champ login, migration Serwist**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -225,7 +225,7 @@ Usage interne uniquement. L'utilisateur saisit les tâches déléguées, renseig
 
 5 étapes guidées à la première ouverture :
 1. Bienvenue — prénom + mot de passe
-2. Email + login
+2. Email
 3. Projets + couleurs/icônes
 4. Horaires des 3 notifications
 5. Confirmation — récapitulatif
@@ -234,7 +234,7 @@ Usage interne uniquement. L'utilisateur saisit les tâches déléguées, renseig
 
 ## 16. Paramètres
 
-- Compte : prénom, login, mot de passe, email
+- Compte : prénom, mot de passe, email
 - Projets : ajout / modification / couleur / icône
 - Notifications : horaires des 3 flux
 - Seuils d'alerte : bannière orange (défaut 15) et rouge (défaut 20)
@@ -288,3 +288,9 @@ Un champ `timezone` est ajouté dans `preferences`, par défaut `'Europe/Paris'`
 ### 19.4 Reset de mot de passe (BU-17)
 
 Flux standard Supabase Auth — lien "Mot de passe oublié" sur l'écran de connexion → email de reset → nouveau mot de passe.
+
+### 19.5 Suppression du champ "login" (décision du 11 juin 2026)
+
+L'identifiant de connexion est **l'email** — le champ `login` (pseudo distinct de l'email) est supprimé. Raison : Supabase Auth ne gère nativement que l'email ; un login séparé imposerait une résolution login→email avant authentification (clé service-role, endpoint custom, contrainte d'unicité, surface d'énumération d'utilisateurs) pour un bénéfice quasi nul sur une app mono-utilisateur à session persistante. Le **prénom** est conservé pour la personnalisation de l'interface.
+
+Impacte : schéma BDD (colonne `login` supprimée de `preferences`), API auth (connexion par email), onboarding étape 2, paramètres compte, besoins utilisateurs BU-13/BU-14, codes d'erreur (`LOGIN_DEJA_UTILISE` et `LOGIN_NOT_FOUND` supprimés).

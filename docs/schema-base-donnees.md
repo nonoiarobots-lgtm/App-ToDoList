@@ -1,6 +1,6 @@
 # Schéma de base de données — Outil personnel de gestion de tâches
-**Version 1 — PostgreSQL / Supabase**
-*Dernière mise à jour : 30 mai 2026*
+**Version 2 — Suppression du champ login (cadrage §19.5)**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -40,7 +40,6 @@ create table preferences (
   id           uuid primary key default gen_random_uuid(),
   user_id      uuid not null references auth.users(id) on delete cascade,
   prenom       text not null,
-  login        text not null unique,
 
   -- Horaires notifications (stockés en heure locale HH:MM)
   heure_briefing      time not null default '08:00',

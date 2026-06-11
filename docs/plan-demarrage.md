@@ -1,6 +1,6 @@
 # Plan de démarrage — Outil personnel de gestion de tâches
-**Version 1 — Avant la première ligne de code**
-*Dernière mise à jour : 30 mai 2026*
+**Version 2 — Serwist, auth par email**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -425,7 +425,6 @@ export interface Preferences {
   id: string;
   user_id: string;
   prenom: string;
-  login: string;
   heure_briefing: string;       // format HH:MM
   heure_qualification: string;
   heure_retards: string;
@@ -528,8 +527,6 @@ export type CodeErreur =
   | 'IA_TIMEOUT'
   | 'BDD_INDISPONIBLE'
   | 'EMAIL_DEJA_UTILISE'
-  | 'LOGIN_DEJA_UTILISE'
-  | 'LOGIN_NOT_FOUND'
   | 'SESSION_EXPIREE';
 ```
 
@@ -767,7 +764,6 @@ create table preferences (
   id                  uuid primary key default gen_random_uuid(),
   user_id             uuid not null references auth.users(id) on delete cascade,
   prenom              text not null,
-  login               text not null unique,
   heure_briefing      time not null default '08:00',
   heure_qualification time not null default '12:00',
   heure_retards       time not null default '18:00',
