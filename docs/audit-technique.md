@@ -1,6 +1,6 @@
 # Audit technique — Outil personnel de gestion de tâches
-**Version 1 — Cadrage architecture**
-*Dernière mise à jour : 30 mai 2026*
+**Version 2 — Ajout risque pause Supabase + parade keep-alive**
+*Dernière mise à jour : 11 juin 2026*
 
 ---
 
@@ -35,6 +35,10 @@ Si le job de création de tâche récurrente rate une exécution (serveur down, 
 
 **Risque 4 — Sécurité des données personnelles**
 Mot de passe, email, tâches perso et pro mélangées. Chiffrement en transit (HTTPS), hachage du mot de passe (bcrypt via Supabase Auth), isolation des données par utilisateur (Row Level Security Supabase).
+
+**Risque 5 — Mise en pause du projet Supabase (plan gratuit)**
+Le plan gratuit Supabase met en pause les projets sans activité API pendant ~7 jours. Un projet en pause = pg_cron arrêté = plus aucune notification, et l'app ne répond plus à la première ouverture. L'usage quotidien suffit normalement, mais une semaine sans ouvrir l'app (vacances) déclencherait la pause — précisément quand les relances comptent le plus.
+**Parade retenue** : route `GET /api/keepalive` (protégée par `CRON_SECRET`) appelée chaque jour par un cron Vercel (inclus dans le plan Hobby). Détail dans le plan de démarrage, Action 1.
 
 ---
 

@@ -1,5 +1,5 @@
 # Plan de démarrage — Outil personnel de gestion de tâches
-**Version 2 — Serwist, auth par email**
+**Version 3 — Serwist, auth par email, keep-alive Supabase**
 *Dernière mise à jour : 11 juin 2026*
 
 ---
@@ -43,6 +43,7 @@ Définir l'arborescence complète du projet Next.js de façon à ce que chaque f
 ├── next.config.ts                      # Config Next.js + PWA
 ├── package.json
 ├── tsconfig.json
+├── vercel.json                         # Cron keep-alive Supabase
 ├── README.md                           # (Action 10)
 │
 ├── app/                                # App Router Next.js
@@ -81,8 +82,10 @@ Définir l'arborescence complète du projet Next.js de façon à ce que chaque f
 │       ├── projets/
 │       │   ├── route.ts                # GET + POST
 │       │   └── [id]/route.ts           # PATCH + DELETE
-│       └── preferences/
-│           └── route.ts                # GET + PATCH
+│       ├── preferences/
+│       │   └── route.ts                # GET + PATCH
+│       └── keepalive/
+│           └── route.ts                # GET — appelé par le cron Vercel (anti-pause Supabase)
 │
 ├── components/                         # Composants React
 │   ├── ui/                             # Composants génériques
@@ -270,6 +273,42 @@ serwist.addEventListeners();
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
+}
+```
+
+### vercel.json — cron keep-alive Supabase
+
+**Pourquoi** : le plan gratuit Supabase met en pause les projets sans activité pendant ~7 jours. Un projet en pause = pg_cron arrêté = plus aucune notification. Un cron Vercel quotidien (inclus dans le plan Hobby, max 2 crons) pinge la base pour garantir qu'elle ne s'endort jamais, même pendant les vacances.
+
+```json
+{
+  "crons": [
+    { "path": "/api/keepalive", "schedule": "0 5 * * *" }
+  ]
+}
+```
+
+### app/api/keepalive/route.ts
+
+```typescript
+import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+export async function GET(req: Request) {
+  // Vercel envoie automatiquement "Authorization: Bearer <CRON_SECRET>"
+  // quand la variable d'environnement CRON_SECRET est définie
+  if (req.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  // Requête minimale — compte comme activité côté Supabase
+  const { error } = await supabase.from('preferences').select('id').limit(1);
+
+  return NextResponse.json({ ok: !error, at: new Date().toISOString() });
 }
 ```
 
@@ -576,6 +615,13 @@ VAPID_PRIVATE_KEY=xxxxxxxxxx...
 VAPID_SUBJECT=mailto:admin@mes-taches.app
 
 # ============================================================
+# VERCEL CRON — keep-alive Supabase
+# Générer une valeur aléatoire : openssl rand -hex 32
+# Vercel l'envoie automatiquement dans le header Authorization des crons
+# ============================================================
+CRON_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# ============================================================
 # APP
 # ============================================================
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -626,6 +672,7 @@ const ROUTES_PUBLIQUES = [
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/reset-password',
+  '/api/keepalive', // protégée par CRON_SECRET dans la route elle-même
 ];
 
 export async function middleware(req: NextRequest) {
