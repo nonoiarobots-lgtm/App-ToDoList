@@ -160,10 +160,10 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
       </div>
 
       <div className="settings-section">
-        <h2>Notifications (tranche ④)</h2>
+        <h2>Rappels email</h2>
         <div className="row-2">
           <div className="field">
-            <label>Briefing</label>
+            <label>Briefing matin</label>
             <input
               type="time"
               value={heures.briefing}
@@ -171,15 +171,7 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
             />
           </div>
           <div className="field">
-            <label>Qualification</label>
-            <input
-              type="time"
-              value={heures.qualification}
-              onChange={e => setHeures({ ...heures, qualification: e.target.value })}
-            />
-          </div>
-          <div className="field">
-            <label>Retards</label>
+            <label>Relance retards</label>
             <input
               type="time"
               value={heures.retards}

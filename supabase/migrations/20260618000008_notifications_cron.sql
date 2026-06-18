@@ -15,4 +15,5 @@
 --        ); $$
 --   );
 
-create extension if not exists pg_net;
+-- pg_net dans le schéma dédié `extensions` (pas `public` — advisor sécurité 0014)
+create extension if not exists pg_net with schema extensions;
