@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
 import { formatHeures, heuresEnMinutes, estDureeValide, minutesEnHeures } from '@/lib/logique-cra';
@@ -51,11 +52,16 @@ export default function CraPage() {
     <main className="screen">
       <div className="screen-header">
         <h1 className="screen-title">Compte-rendu</h1>
-        {!estAujourdhui && (
-          <button className="screen-count" style={{ cursor: 'pointer' }} onClick={() => setDate(isoLocal(new Date()))}>
-            Aujourd&apos;hui
-          </button>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {!estAujourdhui && (
+            <button className="screen-count" style={{ cursor: 'pointer' }} onClick={() => setDate(isoLocal(new Date()))}>
+              Aujourd&apos;hui
+            </button>
+          )}
+          <Link href="/cra/restitution" style={{ fontSize: 13, color: 'var(--accent)' }}>
+            📊 Restitution
+          </Link>
+        </div>
       </div>
 
       <div className="cra-datenav">

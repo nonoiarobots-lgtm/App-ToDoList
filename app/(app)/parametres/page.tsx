@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
@@ -252,10 +251,6 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
       <button className="btn" onClick={enregistrerPrefs}>
         Enregistrer
       </button>
-      <div style={{ height: 10 }} />
-      <Link href="/archives" className="btn btn-secondary" style={{ textAlign: 'center' }}>
-        📁 Voir les archives
-      </Link>
       <div style={{ height: 10 }} />
       <button className="btn btn-danger" onClick={deconnecter}>
         Se déconnecter

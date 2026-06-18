@@ -38,3 +38,78 @@ export function formatHeures(min: number): string {
   const s = arrondi.toFixed(2).replace(/\.?0+$/, '');
   return `${s.replace('.', ',')} h`;
 }
+
+// --- Restitution / vue semaine ---
+
+// Date locale au format YYYY-MM-DD
+export function isoLocal(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+// Total CRA par jour : { 'YYYY-MM-DD': minutes }
+export function agregerParJour(activites: { date_activite: string; duree_min: number }[]): Record<string, number> {
+  const parJour: Record<string, number> = {};
+  for (const a of activites) parJour[a.date_activite] = (parJour[a.date_activite] ?? 0) + a.duree_min;
+  return parJour;
+}
+
+// État de saisie d'un jour (pastille vue semaine, 3 états)
+export function etatCraJour(totalMin: number, cibleMin: number): 'complet' | 'partiel' | 'vide' {
+  if (totalMin <= 0) return 'vide';
+  if (totalMin >= cibleMin) return 'complet';
+  return 'partiel';
+}
+
+// Pourcentage entier d'un total par rapport à une somme (0 si somme nulle)
+export function pourcent(part: number, total: number): number {
+  return total > 0 ? Math.round((part / total) * 100) : 0;
+}
+
+// Lundi → dimanche contenant la date donnée
+export function bornesSemaine(dateISO: string): { from: string; to: string } {
+  const d = new Date(`${dateISO}T12:00:00`);
+  const offset = (d.getDay() + 6) % 7; // 0 = lundi
+  const lundi = new Date(d);
+  lundi.setDate(d.getDate() - offset);
+  const dimanche = new Date(lundi);
+  dimanche.setDate(lundi.getDate() + 6);
+  return { from: isoLocal(lundi), to: isoLocal(dimanche) };
+}
+
+// 1er → dernier jour du mois contenant la date donnée
+export function bornesMois(dateISO: string): { from: string; to: string } {
+  const d = new Date(`${dateISO}T12:00:00`);
+  const premier = new Date(d.getFullYear(), d.getMonth(), 1);
+  const dernier = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  return { from: isoLocal(premier), to: isoLocal(dernier) };
+}
+
+// Nombre de jours ouvrés (lundi–vendredi) entre deux dates incluses
+export function joursOuvres(fromISO: string, toISO: string): number {
+  let n = 0;
+  const cur = new Date(`${fromISO}T12:00:00`);
+  const fin = new Date(`${toISO}T12:00:00`);
+  while (cur <= fin) {
+    const j = cur.getDay();
+    if (j !== 0 && j !== 6) n++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return n;
+}
+
+// Cible d'une période = jours ouvrés × cible journalière
+export function ciblePeriode(fromISO: string, toISO: string, cibleJourMin: number): number {
+  return joursOuvres(fromISO, toISO) * cibleJourMin;
+}
+
+// Liste des dates (YYYY-MM-DD) d'une période incluse
+export function listerJours(fromISO: string, toISO: string): string[] {
+  const jours: string[] = [];
+  const cur = new Date(`${fromISO}T12:00:00`);
+  const fin = new Date(`${toISO}T12:00:00`);
+  while (cur <= fin) {
+    jours.push(isoLocal(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return jours;
+}

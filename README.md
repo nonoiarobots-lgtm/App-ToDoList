@@ -17,8 +17,8 @@ Auth email, capture rapide, backlog avec clôture, qualification, paramètres. A
 - [x] Itération retours d'usage (2026-06-18) — capture en rafale, auto-qualification, wizard de qualification enchaînée, refonte ergonomique des filtres backlog, **module CRA** (compte-rendu d'activité), nouvelle icône
 - [ ] Tranche ② — capture vocale (Web Speech API) + découpage IA Claude
 - [ ] Tranche ③ — briefing matin, wizards qualification et relance retards, swipe
-- [ ] Emails 8h/12h/18h (pg_cron + Edge Function + Resend ou SMTP Gmail) — *en attente*
-- [ ] Vue semaine (matrice + indicateur CRA) + restitution CRA — *en cours*
+- [x] Vue semaine (matrice projets × jours + indicateur CRA par jour) + restitution CRA (synthèse semaine/mois, export CSV) — 2026-06-18
+- [ ] Emails 8h/12h/18h (pg_cron + Edge Function + Resend ou SMTP Gmail) — *en attente du choix expéditeur*
 - [ ] Tranche ⑤ — archives, récurrence, recherche, mode hors ligne
 
 ## Démarrage rapide

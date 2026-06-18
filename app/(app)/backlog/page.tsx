@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import useSWR, { useSWRConfig } from 'swr';
 import { TacheCard } from '@/components/taches/TacheCard';
 import { appeler } from '@/lib/fetcher';
@@ -126,7 +127,12 @@ export default function BacklogPage() {
       )}
       <div className="screen-header">
         <h1 className="screen-title">Backlog</h1>
-        <span className="screen-count">{taches.length} tâches</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span className="screen-count">{taches.length} tâches</span>
+          <Link href="/archives" style={{ fontSize: 13, color: 'var(--accent)' }}>
+            📁 Archives
+          </Link>
+        </div>
       </div>
 
       <div className="search-row">
