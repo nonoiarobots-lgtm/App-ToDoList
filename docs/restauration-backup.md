@@ -10,7 +10,7 @@ Repo → **Settings → Secrets and variables → Actions** :
 
 | Secret | Valeur |
 |---|---|
-| `SUPABASE_DB_URL` | Chaîne **Session pooler** (Supabase → Settings → Database → Connection string → *Session pooler*), avec le mot de passe de la base |
+| `SUPABASE_DB_PASSWORD` | Mot de passe **brut** de la base (Supabase → Settings → Database → *Reset database password*). Le reste de la connexion (host/user/port via Session pooler) est en dur dans le workflow. |
 | `BACKUP_PASSPHRASE` | Phrase secrète de chiffrement — **à conserver hors du dépôt** (sans elle, les sauvegardes sont illisibles) |
 
 ## Récupérer une sauvegarde
