@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { appeler } from '@/lib/fetcher';
 import { estQualifiable } from '@/lib/logique-taches';
+import { DicteeIA } from './DicteeIA';
 import type { Projet } from '@/types/projet';
 import type { PrioriteTache } from '@/types/tache';
 
@@ -23,6 +24,7 @@ export function CaptureModal({ projets, onClose, onCreee }: Props) {
   const [enCours, setEnCours] = useState(false);
   const [erreur, setErreur] = useState('');
   const [nbAjoutees, setNbAjoutees] = useState(0);
+  const [mode, setMode] = useState<'manuel' | 'dictee'>('manuel');
   const titreRef = useRef<HTMLInputElement>(null);
 
   const echeanceIso = echeance ? new Date(`${echeance}T18:00:00`).toISOString() : null;
@@ -54,6 +56,17 @@ export function CaptureModal({ projets, onClose, onCreee }: Props) {
       setErreur(e instanceof Error ? e.message : 'Sauvegarde échouée');
       setEnCours(false);
     }
+  }
+
+  if (mode === 'dictee') {
+    return (
+      <DicteeIA
+        projets={projets}
+        onCreees={onCreee}
+        onClose={onClose}
+        onRetour={() => setMode('manuel')}
+      />
+    );
   }
 
   return (
@@ -107,6 +120,9 @@ export function CaptureModal({ projets, onClose, onCreee }: Props) {
           disabled={!titre.trim() || enCours}
         >
           + Capturer et continuer
+        </button>
+        <button className="btn btn-ghost" onClick={() => setMode('dictee')} disabled={enCours}>
+          🎤 Dicter plusieurs tâches (IA)
         </button>
         <button className="btn btn-ghost" onClick={onClose}>
           {nbAjoutees > 0 ? 'Terminé' : 'Annuler'}

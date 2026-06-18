@@ -15,7 +15,7 @@ Auth email, capture rapide, backlog avec clôture, qualification, paramètres. A
 - [x] Sprint 0 — scaffold, Supabase, Vercel, keep-alive
 - [x] Tranche ① — auth email, capture texte, backlog, qualification basique, paramètres
 - [x] Itération retours d'usage (2026-06-18) — capture en rafale, auto-qualification, wizard de qualification enchaînée, refonte ergonomique des filtres backlog, **module CRA** (compte-rendu d'activité), nouvelle icône
-- [~] Tranche ② — capture vocale : **backend découpage IA livré (Claude Haiku 4.5)** ; écran vocal (Web Speech API) à venir
+- [x] Tranche ② — capture vocale : dictée Web Speech API + découpage IA **Claude Haiku 4.5** + prévisualisation éditable (2026-06-18)
 - [ ] Tranche ③ — briefing matin, wizards qualification et relance retards, swipe
 - [x] Vue semaine (matrice projets × jours + indicateur CRA par jour) + restitution CRA (synthèse semaine/mois, export CSV) — 2026-06-18
 - [x] Emails 8h (briefing) + 18h (relance retards) via **Gmail SMTP** — pg_cron → `/api/cron/notifications` (2026-06-18) ; *reste à configurer : env Vercel + job cron (voir ci-dessous)*
