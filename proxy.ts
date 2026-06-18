@@ -10,6 +10,7 @@ const ROUTES_PUBLIQUES = [
   '/api/auth/register',
   '/api/auth/reset-password',
   '/api/keepalive', // protégée par CRON_SECRET dans la route elle-même
+  '/api/cron', // rappels email — protégés par CRON_SECRET dans la route elle-même
 ];
 
 // Next 16 : la convention "middleware.ts" est remplacée par "proxy.ts"
@@ -27,7 +28,9 @@ export default async function proxy(req: NextRequest) {
     pathname.startsWith('/icons') ||
     pathname === '/manifest.json' ||
     pathname === '/sw.js' ||
-    pathname === '/favicon.ico'
+    pathname === '/favicon.ico' ||
+    pathname === '/icon.png' ||
+    pathname === '/apple-icon.png'
   ) {
     return NextResponse.next();
   }
