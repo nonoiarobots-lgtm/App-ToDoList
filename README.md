@@ -18,7 +18,7 @@ Auth email, capture rapide, backlog avec clôture, qualification, paramètres. A
 - [ ] Tranche ② — capture vocale (Web Speech API) + découpage IA Claude
 - [ ] Tranche ③ — briefing matin, wizards qualification et relance retards, swipe
 - [x] Vue semaine (matrice projets × jours + indicateur CRA par jour) + restitution CRA (synthèse semaine/mois, export CSV) — 2026-06-18
-- [ ] Emails 8h/12h/18h (pg_cron + Edge Function + Resend ou SMTP Gmail) — *en attente du choix expéditeur*
+- [x] Emails 8h (briefing) + 18h (relance retards) via **Gmail SMTP** — pg_cron → `/api/cron/notifications` (2026-06-18) ; *reste à configurer : env Vercel + job cron (voir ci-dessous)*
 - [ ] Tranche ⑤ — archives, récurrence, recherche, mode hors ligne
 
 ## Démarrage rapide
@@ -82,6 +82,8 @@ date du document modifié.
 | 2026-06-18 | **Module CRA** : tables `types_activite` + `activites`, colonne `preferences.cible_jour_min` (migration 7) | Besoin utilisateur — suivi du temps passé par type/projet, décompte sur base 7h30 |
 | 2026-06-18 | Statut « qualifié » = réutilisation de `active` (pas de nouveau statut) | Éviter une migration d'enum risquée ; une tâche entièrement renseignée n'a plus rien à qualifier |
 | 2026-06-18 | `npm run dev` → `next dev --webpack` | Next 16 lance Turbopack par défaut, incompatible avec la config webpack de Serwist |
+| 2026-06-18 | Emails via **Gmail SMTP (nodemailer)** plutôt que Resend | App perso, ~2 emails/jour à soi-même ; pas de service ni domaine à gérer |
+| 2026-06-18 | Scheduling **pg_cron → pg_net → route Vercel** (pas Edge Function) | Le cron Vercel Hobby ne tourne qu'1×/jour ; pg_cron toutes les 5 min appelle la route, logique en TS dans le repo |
 
 ## Prochaine étape
 
