@@ -35,6 +35,7 @@ export async function PATCH(req: Request) {
     'heure_retards',
     'seuil_orange',
     'seuil_rouge',
+    'cible_jour_min',
     'timezone',
     'push_subscription',
   ]) {
@@ -43,6 +44,12 @@ export async function PATCH(req: Request) {
 
   if (typeof maj.prenom === 'string' && !maj.prenom.trim()) {
     return reponseErreur('VALIDATION_ERROR', 'Le prénom ne peut pas être vide.', 400);
+  }
+  if (
+    maj.cible_jour_min !== undefined &&
+    (typeof maj.cible_jour_min !== 'number' || maj.cible_jour_min <= 0 || maj.cible_jour_min % 15 !== 0)
+  ) {
+    return reponseErreur('VALIDATION_ERROR', 'La cible journalière doit être un multiple de 15 minutes.', 400);
   }
   for (const h of ['heure_briefing', 'heure_qualification', 'heure_retards']) {
     if (maj[h] !== undefined && !HEURE_REGEX.test(String(maj[h]))) {

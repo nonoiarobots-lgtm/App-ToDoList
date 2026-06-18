@@ -7,6 +7,7 @@ export interface Preferences {
   heure_retards: string;
   seuil_orange: number; // défaut 15
   seuil_rouge: number; // défaut 20
+  cible_jour_min: number; // cible journalière CRA en minutes, défaut 450 (7h30)
   timezone: string; // ex: 'Europe/Paris'
   push_subscription: PushSubscriptionJSON | null;
   created_at: string;
@@ -20,6 +21,7 @@ export interface PreferencesMaj {
   heure_retards?: string;
   seuil_orange?: number;
   seuil_rouge?: number;
+  cible_jour_min?: number;
   timezone?: string;
   push_subscription?: PushSubscriptionJSON | null;
 }

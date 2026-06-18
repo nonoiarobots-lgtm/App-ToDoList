@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
+import { formatHeures, heuresEnMinutes, minutesEnHeures, estDureeValide } from '@/lib/logique-cra';
 import type { Preferences } from '@/types/preferences';
 import type { Projet, PaletteDisponible } from '@/types/projet';
+import type { TypeActivite } from '@/types/activite';
 
 export default function ParametresPage() {
   const { data: prefsData } = useSWR<{ preferences: Preferences; email: string }>('/api/preferences');
@@ -25,6 +28,7 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
   const router = useRouter();
   const { mutate } = useSWRConfig();
   const { data: projetsData } = useSWR<{ projets: Projet[]; palette: PaletteDisponible }>('/api/projets');
+  const { data: typesData } = useSWR<{ types: TypeActivite[] }>('/api/types-activite');
 
   const [prenom, setPrenom] = useState(prefs.prenom);
   const [heures, setHeures] = useState({
@@ -33,13 +37,19 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
     retards: prefs.heure_retards.slice(0, 5),
   });
   const [seuils, setSeuils] = useState({ orange: prefs.seuil_orange, rouge: prefs.seuil_rouge });
+  const [cibleJour, setCibleJour] = useState(minutesEnHeures(prefs.cible_jour_min));
   const [nouveauProjet, setNouveauProjet] = useState('');
+  const [nouveauType, setNouveauType] = useState('');
   const [message, setMessage] = useState('');
   const [erreur, setErreur] = useState('');
 
   async function enregistrerPrefs() {
     setErreur('');
     setMessage('');
+    if (!estDureeValide(cibleJour)) {
+      setErreur('La cible journalière doit être un multiple d’un quart d’heure.');
+      return;
+    }
     try {
       await appeler('/api/preferences', 'PATCH', {
         prenom,
@@ -48,12 +58,33 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
         heure_retards: heures.retards,
         seuil_orange: seuils.orange,
         seuil_rouge: seuils.rouge,
+        cible_jour_min: heuresEnMinutes(cibleJour),
       });
       mutate('/api/preferences');
       setMessage('Préférences enregistrées ✓');
     } catch (e) {
       setErreur(e instanceof Error ? e.message : 'Sauvegarde échouée');
     }
+  }
+
+  async function ajouterType(e: React.FormEvent) {
+    e.preventDefault();
+    if (!nouveauType.trim()) return;
+    setErreur('');
+    try {
+      await appeler('/api/types-activite', 'POST', { nom: nouveauType });
+      setNouveauType('');
+      mutate('/api/types-activite');
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : 'Création impossible');
+    }
+  }
+
+  async function supprimerType(t: TypeActivite) {
+    if (!confirm(`Supprimer le type « ${t.nom} » ? Les activités liées passeront en « Sans type ».`)) return;
+    await appeler(`/api/types-activite/${t.id}`, 'DELETE');
+    mutate('/api/types-activite');
+    mutate(key => typeof key === 'string' && key.startsWith('/api/activites'));
   }
 
   async function ajouterProjet(e: React.FormEvent) {
@@ -160,6 +191,41 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
       </div>
 
       <div className="settings-section">
+        <h2>Compte-rendu d&apos;activité</h2>
+        <div className="field">
+          <label>Cible journalière — {formatHeures(heuresEnMinutes(cibleJour))}</label>
+          <input
+            type="number"
+            step="0.25"
+            min="0.25"
+            value={cibleJour}
+            onChange={e => setCibleJour(Number(e.target.value))}
+          />
+        </div>
+        <div className="field">
+          <label>Types d&apos;activité</label>
+          {(typesData?.types ?? []).map(t => (
+            <div key={t.id} className="projet-row">
+              <span className="projet-nom">{t.nom}</span>
+              <button className="btn-ghost" style={{ cursor: 'pointer' }} onClick={() => supprimerType(t)}>
+                ✕
+              </button>
+            </div>
+          ))}
+          <form className="row-2" onSubmit={ajouterType}>
+            <input
+              placeholder="Nouveau type…"
+              value={nouveauType}
+              onChange={e => setNouveauType(e.target.value)}
+            />
+            <button className="btn btn-secondary" type="submit" style={{ maxWidth: 110 }}>
+              Ajouter
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div className="settings-section">
         <h2>Seuils d&apos;alerte « à qualifier »</h2>
         <div className="row-2">
           <div className="field">
@@ -186,6 +252,10 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
       <button className="btn" onClick={enregistrerPrefs}>
         Enregistrer
       </button>
+      <div style={{ height: 10 }} />
+      <Link href="/archives" className="btn btn-secondary" style={{ textAlign: 'center' }}>
+        📁 Voir les archives
+      </Link>
       <div style={{ height: 10 }} />
       <button className="btn btn-danger" onClick={deconnecter}>
         Se déconnecter

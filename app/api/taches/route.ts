@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { clientAuthentifie, reponseErreur } from '@/lib/api-utils';
 import { ensurePreferences } from '@/lib/preferences-server';
 import { calculerNiveauAlerte } from '@/lib/logique-seuils';
-import { calculerStatutRetard } from '@/lib/logique-taches';
+import { calculerStatutRetard, statutACapture } from '@/lib/logique-taches';
 import type { StatutTache, PrioriteTache } from '@/types/tache';
 
 const STATUTS: StatutTache[] = ['a_qualifier', 'active', 'en_retard', 'en_attente_retour', 'archivee'];
@@ -78,17 +78,22 @@ export async function POST(req: Request) {
     return reponseErreur('VALIDATION_ERROR', 'Priorité invalide.', 400);
   }
 
+  const priorite = body.priorite ?? 'moyenne';
+  const projet_id = body.projet_id ?? null;
+  const date_echeance = body.date_echeance ?? null;
+
   const { data, error } = await supabase
     .from('taches')
     .insert({
       user_id: user.id,
       titre: body.titre.trim(),
-      projet_id: body.projet_id ?? null,
-      priorite: body.priorite ?? 'moyenne',
-      date_echeance: body.date_echeance ?? null,
+      projet_id,
+      priorite,
+      date_echeance,
       notes: body.notes?.trim() || null,
       pre_caracterisee_ia: body.pre_caracterisee_ia ?? false,
-      // statut par défaut : a_qualifier (défaut SQL)
+      // Tâche déjà entièrement renseignée → 'active' ; sinon 'a_qualifier' (besoin point 2)
+      statut: statutACapture({ projet_id, date_echeance, priorite }),
     })
     .select('*, projet:projets(*)')
     .single();

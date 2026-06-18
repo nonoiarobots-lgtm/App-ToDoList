@@ -1,5 +1,5 @@
 // Logique métier des tâches (specs : docs/tests-tdd.md)
-import type { Tache, StatutTache } from '@/types/tache';
+import type { Tache, StatutTache, PrioriteTache } from '@/types/tache';
 
 // Statuts considérés comme "en cours" — éligibles au passage en retard
 const STATUTS_ACTIFS: StatutTache[] = ['active', 'en_attente_retour', 'en_retard'];
@@ -26,6 +26,22 @@ export function preparerArchivage(): Pick<Tache, 'statut'> {
   return { statut: 'archivee' };
 }
 
+// Une tâche est "qualifiable" quand ses champs de qualification sont tous renseignés :
+// un projet, une échéance et une priorité explicite (≠ 'aucune'). Dans ce cas il n'y a
+// plus rien à qualifier → elle peut basculer directement en 'active' (cf. besoin point 2).
+export function estQualifiable(
+  tache: Pick<Tache, 'projet_id' | 'date_echeance' | 'priorite'>
+): boolean {
+  return tache.projet_id != null && tache.date_echeance != null && tache.priorite !== 'aucune';
+}
+
+// Statut de capture : 'active' si la tâche est déjà entièrement qualifiée, sinon 'a_qualifier'.
+export function statutACapture(
+  tache: Pick<Tache, 'projet_id' | 'date_echeance' | 'priorite'>
+): StatutTache {
+  return estQualifiable(tache) ? 'active' : 'a_qualifier';
+}
+
 export function estEnRetard(
   tache: Pick<Tache, 'statut' | 'date_echeance'>,
   maintenant: Date = new Date()
@@ -37,4 +53,42 @@ export function estEnRetard(
 export function joursDeRetard(dateEcheance: string, maintenant: Date = new Date()): number {
   const diff = maintenant.getTime() - new Date(dateEcheance).getTime();
   return Math.max(0, Math.floor(diff / 86_400_000));
+}
+
+// Filtres du backlog (besoin point 5 — ergonomie). Chaque critère vide = "tout".
+// 'sans-projet' est la clé conventionnelle des tâches sans projet.
+export interface FiltresBacklog {
+  recherche: string;
+  statuts: StatutTache[];
+  priorites: PrioriteTache[];
+  projetIds: string[];
+}
+
+export const FILTRES_VIDES: FiltresBacklog = {
+  recherche: '',
+  statuts: [],
+  priorites: [],
+  projetIds: [],
+};
+
+// Nombre de critères actifs (pour le badge du bouton "Filtres").
+export function nombreFiltresActifs(f: FiltresBacklog): number {
+  return (
+    (f.recherche.trim() ? 1 : 0) + f.statuts.length + f.priorites.length + f.projetIds.length
+  );
+}
+
+// Applique tous les critères. Recherche insensible à la casse sur titre + notes.
+export function filtrerTaches(
+  taches: Tache[],
+  f: FiltresBacklog
+): Tache[] {
+  const recherche = f.recherche.trim().toLowerCase();
+  return taches.filter(t => {
+    if (recherche && !`${t.titre} ${t.notes ?? ''}`.toLowerCase().includes(recherche)) return false;
+    if (f.statuts.length && !f.statuts.includes(t.statut)) return false;
+    if (f.priorites.length && !f.priorites.includes(t.priorite)) return false;
+    if (f.projetIds.length && !f.projetIds.includes(t.projet_id ?? 'sans-projet')) return false;
+    return true;
+  });
 }

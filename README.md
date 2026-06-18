@@ -14,10 +14,12 @@ Auth email, capture rapide, backlog avec clôture, qualification, paramètres. A
 
 - [x] Sprint 0 — scaffold, Supabase, Vercel, keep-alive
 - [x] Tranche ① — auth email, capture texte, backlog, qualification basique, paramètres
+- [x] Itération retours d'usage (2026-06-18) — capture en rafale, auto-qualification, wizard de qualification enchaînée, refonte ergonomique des filtres backlog, **module CRA** (compte-rendu d'activité), nouvelle icône
 - [ ] Tranche ② — capture vocale (Web Speech API) + découpage IA Claude
 - [ ] Tranche ③ — briefing matin, wizards qualification et relance retards, swipe
-- [ ] Tranche ④ — notifications push + pg_cron + fallback email Resend
-- [ ] Tranche ⑤ — vue semaine, archives, récurrence, recherche, mode hors ligne
+- [ ] Emails 8h/12h/18h (pg_cron + Edge Function + Resend ou SMTP Gmail) — *en attente*
+- [ ] Vue semaine (matrice + indicateur CRA) + restitution CRA — *en cours*
+- [ ] Tranche ⑤ — archives, récurrence, recherche, mode hors ligne
 
 ## Démarrage rapide
 
@@ -77,6 +79,9 @@ date du document modifié.
 | 2026-06-11 | Ligne `preferences` créée au **premier accès authentifié** (depuis `user_metadata`) et non à l'inscription | Robuste que la confirmation email soit activée ou non |
 | 2026-06-11 | Écran détail `/tache/[id]` ajouté — sert de qualification basique | Le wizard one-by-one du cadrage arrive en tranche ③ ; l'onboarding 5 étapes est remplacé par une inscription simple (à arbitrer) |
 | 2026-06-11 | Migration `audit_fixes` : search_path des fonctions SQL figé, RLS `(select auth.uid())`, index FK | Correctifs des advisors Supabase (voir [audit](docs/audit-2026-06-11.md)) |
+| 2026-06-18 | **Module CRA** : tables `types_activite` + `activites`, colonne `preferences.cible_jour_min` (migration 7) | Besoin utilisateur — suivi du temps passé par type/projet, décompte sur base 7h30 |
+| 2026-06-18 | Statut « qualifié » = réutilisation de `active` (pas de nouveau statut) | Éviter une migration d'enum risquée ; une tâche entièrement renseignée n'a plus rien à qualifier |
+| 2026-06-18 | `npm run dev` → `next dev --webpack` | Next 16 lance Turbopack par défaut, incompatible avec la config webpack de Serwist |
 
 ## Prochaine étape
 

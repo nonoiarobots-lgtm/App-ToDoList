@@ -4,14 +4,34 @@ import { useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { TacheCard } from '@/components/taches/TacheCard';
 import { appeler } from '@/lib/fetcher';
-import { estEnRetard } from '@/lib/logique-taches';
+import {
+  estEnRetard,
+  filtrerTaches,
+  FILTRES_VIDES,
+  nombreFiltresActifs,
+  type FiltresBacklog,
+} from '@/lib/logique-taches';
 import type { ReponseListeTaches } from '@/types/api';
-import type { Tache } from '@/types/tache';
+import type { Tache, StatutTache, PrioriteTache } from '@/types/tache';
 import type { Projet } from '@/types/projet';
 
-type Filtre = 'tout' | 'haute' | 'moyenne' | 'a_qualifier' | string; // string = projet_id
+const LABELS_STATUT: Record<string, string> = {
+  a_qualifier: '⚡ À qualifier',
+  active: 'Active',
+  en_attente_retour: '⏳ En attente',
+  en_retard: '🔴 En retard',
+};
+const STATUTS_FILTRABLES: StatutTache[] = ['a_qualifier', 'active', 'en_attente_retour', 'en_retard'];
 
-// Sections du backlog (cadrage §9)
+const LABELS_PRIORITE: Record<string, string> = {
+  haute: '🔴 Haute',
+  moyenne: '🟠 Moyenne',
+  basse: '🔵 Basse',
+  aucune: 'Aucune',
+};
+const PRIORITES_FILTRABLES: PrioriteTache[] = ['haute', 'moyenne', 'basse', 'aucune'];
+
+// Sections du backlog (cadrage §9) — regroupement par échéance
 function repartir(taches: Tache[]) {
   const aujourdHui = new Date();
   const finSemaine = new Date(aujourdHui);
@@ -28,11 +48,16 @@ function repartir(taches: Tache[]) {
   return sections;
 }
 
+function bascule<T>(liste: T[], valeur: T): T[] {
+  return liste.includes(valeur) ? liste.filter(v => v !== valeur) : [...liste, valeur];
+}
+
 export default function BacklogPage() {
   const { mutate } = useSWRConfig();
   const { data, isLoading } = useSWR<ReponseListeTaches>('/api/taches');
   const { data: projetsData } = useSWR<{ projets: Projet[] }>('/api/projets');
-  const [filtre, setFiltre] = useState<Filtre>('tout');
+  const [filtres, setFiltres] = useState<FiltresBacklog>(FILTRES_VIDES);
+  const [panneauOuvert, setPanneauOuvert] = useState(false);
 
   async function cloturer(tache: Tache) {
     // Optimiste : la tâche disparaît immédiatement, archivage en arrière-plan
@@ -54,14 +79,43 @@ export default function BacklogPage() {
     );
   }
 
-  const taches = (data?.data ?? []).filter(t => {
-    if (filtre === 'tout') return true;
-    if (filtre === 'haute' || filtre === 'moyenne') return t.priorite === filtre;
-    if (filtre === 'a_qualifier') return t.statut === 'a_qualifier';
-    return t.projet_id === filtre;
-  });
-  const sections = repartir(taches);
   const projets = projetsData?.projets ?? [];
+  const projetNom = (id: string) =>
+    id === 'sans-projet' ? 'Sans projet' : projets.find(p => p.id === id)?.nom ?? 'Projet';
+
+  const taches = filtrerTaches(data?.data ?? [], filtres);
+  const sections = repartir(taches);
+  const nbActifs = nombreFiltresActifs(filtres);
+
+  // Pastilles supprimables des critères actifs
+  const chipsActives: { cle: string; label: string; retirer: () => void }[] = [];
+  if (filtres.recherche.trim())
+    chipsActives.push({
+      cle: 'recherche',
+      label: `« ${filtres.recherche.trim()} »`,
+      retirer: () => setFiltres(f => ({ ...f, recherche: '' })),
+    });
+  filtres.statuts.forEach(s =>
+    chipsActives.push({
+      cle: `s-${s}`,
+      label: LABELS_STATUT[s],
+      retirer: () => setFiltres(f => ({ ...f, statuts: f.statuts.filter(v => v !== s) })),
+    })
+  );
+  filtres.priorites.forEach(p =>
+    chipsActives.push({
+      cle: `p-${p}`,
+      label: LABELS_PRIORITE[p],
+      retirer: () => setFiltres(f => ({ ...f, priorites: f.priorites.filter(v => v !== p) })),
+    })
+  );
+  filtres.projetIds.forEach(id =>
+    chipsActives.push({
+      cle: `pr-${id}`,
+      label: projetNom(id),
+      retirer: () => setFiltres(f => ({ ...f, projetIds: f.projetIds.filter(v => v !== id) })),
+    })
+  );
 
   return (
     <main className="screen">
@@ -72,42 +126,51 @@ export default function BacklogPage() {
       )}
       <div className="screen-header">
         <h1 className="screen-title">Backlog</h1>
-        <span className="screen-count">{data?.total ?? '…'} tâches</span>
+        <span className="screen-count">{taches.length} tâches</span>
       </div>
 
-      <div className="filter-row">
-        {(
-          [
-            ['tout', 'Tout'],
-            ['haute', '🔴 Haute'],
-            ['moyenne', '🟠 Moyenne'],
-            ['a_qualifier', '⚡ À qualifier'],
-          ] as [Filtre, string][]
-        ).map(([val, label]) => (
-          <button
-            key={val}
-            className={`filter-chip ${filtre === val ? 'active' : ''}`}
-            onClick={() => setFiltre(val)}
-          >
-            {label}
-          </button>
-        ))}
-        {projets.map(p => (
-          <button
-            key={p.id}
-            className={`filter-chip ${filtre === p.id ? 'active' : ''}`}
-            onClick={() => setFiltre(p.id)}
-          >
-            {p.icone ? `${p.icone} ` : ''}
-            {p.nom}
-          </button>
-        ))}
+      <div className="search-row">
+        <div className="search-box">
+          <span aria-hidden>🔍</span>
+          <input
+            type="search"
+            placeholder="Rechercher…"
+            value={filtres.recherche}
+            onChange={e => setFiltres(f => ({ ...f, recherche: e.target.value }))}
+          />
+        </div>
+        <button
+          className={`btn-filtres ${nbActifs > 0 ? 'active' : ''}`}
+          onClick={() => setPanneauOuvert(true)}
+        >
+          Filtres
+          {nbActifs > 0 && <span className="btn-filtres-badge">{nbActifs}</span>}
+        </button>
       </div>
+
+      {chipsActives.length > 0 && (
+        <div className="active-filtres">
+          {chipsActives.map(c => (
+            <button key={c.cle} className="chip-removable" onClick={c.retirer}>
+              {c.label} <span aria-hidden>✕</span>
+            </button>
+          ))}
+          <button className="chip-clear" onClick={() => setFiltres(FILTRES_VIDES)}>
+            Tout effacer
+          </button>
+        </div>
+      )}
 
       {isLoading && <div className="empty-state">Chargement…</div>}
       {!isLoading && taches.length === 0 && (
         <div className="empty-state">
-          Rien ici. Appuie sur <strong>+</strong> pour capturer ta première tâche.
+          {nbActifs > 0 ? (
+            'Aucune tâche ne correspond à ces filtres.'
+          ) : (
+            <>
+              Rien ici. Appuie sur <strong>+</strong> pour capturer ta première tâche.
+            </>
+          )}
         </div>
       )}
 
@@ -133,6 +196,75 @@ export default function BacklogPage() {
               </div>
             </section>
           )
+      )}
+
+      {panneauOuvert && (
+        <div className="modal-overlay" onClick={() => setPanneauOuvert(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>Filtres</h2>
+
+            <div className="filtre-groupe">
+              <label>Statut</label>
+              <div className="filtre-chips">
+                {STATUTS_FILTRABLES.map(s => (
+                  <button
+                    key={s}
+                    className={`filter-chip ${filtres.statuts.includes(s) ? 'active' : ''}`}
+                    onClick={() => setFiltres(f => ({ ...f, statuts: bascule(f.statuts, s) }))}
+                  >
+                    {LABELS_STATUT[s]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="filtre-groupe">
+              <label>Priorité</label>
+              <div className="filtre-chips">
+                {PRIORITES_FILTRABLES.map(p => (
+                  <button
+                    key={p}
+                    className={`filter-chip ${filtres.priorites.includes(p) ? 'active' : ''}`}
+                    onClick={() => setFiltres(f => ({ ...f, priorites: bascule(f.priorites, p) }))}
+                  >
+                    {LABELS_PRIORITE[p]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="filtre-groupe">
+              <label>Projet</label>
+              <div className="filtre-chips">
+                <button
+                  className={`filter-chip ${filtres.projetIds.includes('sans-projet') ? 'active' : ''}`}
+                  onClick={() =>
+                    setFiltres(f => ({ ...f, projetIds: bascule(f.projetIds, 'sans-projet') }))
+                  }
+                >
+                  Sans projet
+                </button>
+                {projets.map(p => (
+                  <button
+                    key={p.id}
+                    className={`filter-chip ${filtres.projetIds.includes(p.id) ? 'active' : ''}`}
+                    onClick={() => setFiltres(f => ({ ...f, projetIds: bascule(f.projetIds, p.id) }))}
+                  >
+                    {p.icone ? `${p.icone} ` : ''}
+                    {p.nom}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button className="btn" onClick={() => setPanneauOuvert(false)}>
+              Voir {taches.length} tâche{taches.length > 1 ? 's' : ''}
+            </button>
+            <button className="btn btn-ghost" onClick={() => setFiltres(FILTRES_VIDES)}>
+              Réinitialiser
+            </button>
+          </div>
+        </div>
       )}
     </main>
   );

@@ -7,7 +7,7 @@ const ONGLETS = [
   { href: '/aujourd-hui', icone: '☀️', label: "Aujourd'hui" },
   { href: '/backlog', icone: '📋', label: 'Backlog' },
   { href: '/qualifier', icone: '⚡', label: 'À qualifier' },
-  { href: '/archives', icone: '📁', label: 'Archives' },
+  { href: '/cra', icone: '📊', label: 'CRA' },
   { href: '/semaine', icone: '📅', label: 'Semaine' },
 ];
 

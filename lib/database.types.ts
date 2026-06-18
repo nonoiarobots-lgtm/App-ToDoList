@@ -10,6 +10,57 @@ export type Database = {
   };
   public: {
     Tables: {
+      activites: {
+        Row: {
+          commentaire: string | null;
+          created_at: string;
+          date_activite: string;
+          duree_min: number;
+          id: string;
+          projet_id: string | null;
+          type_activite_id: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          commentaire?: string | null;
+          created_at?: string;
+          date_activite?: string;
+          duree_min: number;
+          id?: string;
+          projet_id?: string | null;
+          type_activite_id?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          commentaire?: string | null;
+          created_at?: string;
+          date_activite?: string;
+          duree_min?: number;
+          id?: string;
+          projet_id?: string | null;
+          type_activite_id?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'activites_projet_id_fkey';
+            columns: ['projet_id'];
+            isOneToOne: false;
+            referencedRelation: 'projets';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'activites_type_activite_id_fkey';
+            columns: ['type_activite_id'];
+            isOneToOne: false;
+            referencedRelation: 'types_activite';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       jobs_notifications: {
         Row: {
           canal: Database['public']['Enums']['canal_notification'];
@@ -51,6 +102,7 @@ export type Database = {
       };
       preferences: {
         Row: {
+          cible_jour_min: number;
           created_at: string;
           heure_briefing: string;
           heure_qualification: string;
@@ -65,6 +117,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          cible_jour_min?: number;
           created_at?: string;
           heure_briefing?: string;
           heure_qualification?: string;
@@ -79,6 +132,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          cible_jour_min?: number;
           created_at?: string;
           heure_briefing?: string;
           heure_qualification?: string;
@@ -258,6 +312,36 @@ export type Database = {
             referencedColumns: ['id'];
           },
         ];
+      };
+      types_activite: {
+        Row: {
+          actif: boolean;
+          created_at: string;
+          id: string;
+          nom: string;
+          ordre: number;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          actif?: boolean;
+          created_at?: string;
+          id?: string;
+          nom: string;
+          ordre?: number;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          actif?: boolean;
+          created_at?: string;
+          id?: string;
+          nom?: string;
+          ordre?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
       };
     };
     Views: {
