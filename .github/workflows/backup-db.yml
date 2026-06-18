@@ -1,0 +1,51 @@
+name: Sauvegarde BDD
+
+# Sauvegarde quotidienne et chiffrée de la base Supabase, stockée comme artifact privé
+# (rétention 90 jours). Aucun dump n'est commité dans ce dépôt public.
+#
+# Secrets requis (repo → Settings → Secrets and variables → Actions) :
+#   - SUPABASE_DB_URL    : chaîne "Session pooler" (Supabase → Settings → Database)
+#   - BACKUP_PASSPHRASE  : phrase secrète de chiffrement (à conserver précieusement)
+#
+# Restauration : voir docs/restauration-backup.md
+
+on:
+  schedule:
+    - cron: '23 2 * * *' # tous les jours à 02:23 UTC
+  workflow_dispatch: {} # déclenchement manuel possible
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump PostgreSQL + chiffrement
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -eo pipefail
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::Secrets SUPABASE_DB_URL et/ou BACKUP_PASSPHRASE manquants"
+            exit 1
+          fi
+          fichier="backup-$(date +%Y-%m-%d).sql.gz.gpg"
+          # pg_dump via l'image postgres:17 (version alignée sur le serveur Supabase)
+          docker run --rm -e DBURL="$SUPABASE_DB_URL" postgres:17 \
+            sh -c 'pg_dump "$DBURL" --no-owner --no-privileges' \
+            | gzip \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 \
+                  --passphrase "$BACKUP_PASSPHRASE" -o "$fichier"
+          taille=$(stat -c%s "$fichier")
+          if [ "$taille" -lt 1000 ]; then
+            echo "::error::Dump suspicieusement petit ($taille octets) — échec probable"
+            exit 1
+          fi
+          echo "Sauvegarde créée : $fichier ($taille octets)"
+          echo "FICHIER=$fichier" >> "$GITHUB_ENV"
+
+      - name: Upload de l'artifact (chiffré, privé)
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: ${{ env.FICHIER }}
+          retention-days: 90

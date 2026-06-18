@@ -84,6 +84,7 @@ date du document modifié.
 | 2026-06-18 | `npm run dev` → `next dev --webpack` | Next 16 lance Turbopack par défaut, incompatible avec la config webpack de Serwist |
 | 2026-06-18 | Emails via **Gmail SMTP (nodemailer)** plutôt que Resend | App perso, ~2 emails/jour à soi-même ; pas de service ni domaine à gérer |
 | 2026-06-18 | Scheduling **pg_cron → pg_net → route Vercel** (pas Edge Function) | Le cron Vercel Hobby ne tourne qu'1×/jour ; pg_cron toutes les 5 min appelle la route, logique en TS dans le repo |
+| 2026-06-18 | **Sauvegarde BDD** : GitHub Action quotidienne `pg_dump` chiffré (GPG) → artifact privé 90 j | Plan Supabase Free sans backup ; gratuit, rien d'exposé dans le repo public (voir [docs/restauration-backup.md](docs/restauration-backup.md)) |
 
 ## Prochaine étape
 
