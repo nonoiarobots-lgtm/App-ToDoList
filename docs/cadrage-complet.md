@@ -1,6 +1,6 @@
 # Cadrage — Outil personnel de gestion de tâches
-**Version 6 — Décisions tranche ① (confirmation email, préférences, écran détail)**
-*Dernière mise à jour : 11 juin 2026*
+**Version 7 — Itération retours d'usage (CRA, vue semaine, restitution, rappels Gmail)**
+*Dernière mise à jour : 18 juin 2026*
 
 ---
 
@@ -302,3 +302,39 @@ Impacte : schéma BDD (colonne `login` supprimée de `preferences`), API auth (c
 - **Onboarding simplifié** : l'inscription tient en un écran (prénom, email, mot de passe, timezone auto-détectée) ; projets et horaires se configurent dans Paramètres. Le wizard 5 étapes (§15) est suspendu — à réévaluer si un vrai besoin apparaît.
 - **Écran détail `/tache/[id]`** ajouté : édition complète + bouton « Valider la qualification » (a_qualifier → active). Le wizard one-by-one (§7.2) reste prévu en tranche ③.
 - La clôture se fait **au tap** sur le rond ✓ ; les gestes swipe (§9) sont reportés en tranche ③.
+
+---
+
+## 20. Itération « retours d'usage » (18 juin 2026)
+
+Après une semaine d'utilisation réelle, livraison de 7 retours utilisateur + 2 écrans complémentaires. Tout est en production.
+
+### 20.1 Capture en rafale (BU-20)
+La modale de capture gagne un bouton **« Capturer et continuer »** : enregistre puis vide le titre/l'échéance en gardant projet + priorité, sans refermer la modale. Permet de saisir plusieurs tâches d'affilée.
+
+### 20.2 Auto-qualification (BU-21)
+À la capture comme à la qualification, si **projet + échéance + priorité explicite** sont renseignés, la tâche passe directement en `active` (plus rien à qualifier) au lieu de `a_qualifier`. Logique `estQualifiable` / `statutACapture`. Pas de nouveau statut : « qualifié » = `active`.
+
+### 20.3 Qualification enchaînée (§7.2 livrée)
+L'écran `/qualifier` devient un **wizard one-by-one** : compteur « N/total », barre de progression, « Valider et suivante », « Passer ». Plus de retour systématique au backlog entre deux tâches. Le pré-remplissage IA reste à venir (tranche ②).
+
+### 20.4 Ergonomie des filtres backlog (§9 / BU-06)
+Remplacement de la rangée de chips par : **barre de recherche** (titre + notes) + **bouton « Filtres »** ouvrant un panneau multi-sélection (statut / priorité / projet), avec les critères actifs en **pastilles supprimables**. Archives accessible depuis l'en-tête du backlog.
+
+### 20.5 Module CRA — compte-rendu d'activité (BU-22)
+Nouvel écran `/cra` : saisie du temps passé par jour, par **type d'activité** (paramétrable : réunion, expression de besoin, cahier des charges, recette, cadrage, COPIL, formation…) et par **projet**. Saisie **au quart d'heure** (multiples de 15 min). **Décompte** par rapport à une cible journalière (défaut 7h30, paramétrable) pouvant être négative. Nouvelles tables `types_activite` et `activites`, colonne `preferences.cible_jour_min`.
+
+### 20.6 Restitution CRA (BU-23)
+Écran `/cra/restitution` : synthèse **semaine / mois**, total vs cible (jours ouvrés × cible/jour), répartition **par type** et **par projet**, **export CSV**. Endpoint d'agrégation `/api/cra/resume`.
+
+### 20.7 Vue Semaine livrée (§10) + indicateur CRA
+La matrice projets × jours (§10) est implémentée, avec sous chaque jour une **pastille d'état CRA** à 3 états (complet ≥ cible / partiel / vide). Tap sur une cellule → tâches du jour.
+
+### 20.8 Rappels email via Gmail (révision §6 notifications)
+Les rappels **8h (briefing matin)** et **18h (relance retards)** sont envoyés par **email via Gmail SMTP** (nodemailer, compte expéditeur dédié), **et non plus push/Resend**. Le créneau **12h (qualification) est codé mais désactivé**. Scheduling : **pg_cron (toutes les 5 min) → `pg_net` → route Vercel `/api/cron/notifications`** (contourne la limite « 1 cron/jour » du plan Vercel Hobby), idempotence via `jobs_notifications`, fuseau + heure d'été gérés. Le push Web Push et le 12h restent activables ultérieurement.
+
+### 20.9 Nouvelle icône
+Icône d'application remplacée (calendrier) ; déclinaisons 192/512/maskable/apple/favicon générées depuis `public/icons/source-icon.png`.
+
+### 20.10 Sauvegarde de la base (risque audit R1)
+GitHub Action quotidienne : `pg_dump` → chiffrement GPG → artifact privé (90 j). Voir `docs/restauration-backup.md`. `pg_net` déplacé dans le schéma `extensions` (advisor sécurité).

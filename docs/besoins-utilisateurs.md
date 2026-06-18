@@ -1,6 +1,6 @@
 # Besoins utilisateurs — Outil personnel de gestion de tâches
-**Version 3 — Suppression du champ login (cadrage §19.5)**
-*Dernière mise à jour : 11 juin 2026*
+**Version 4 — Itération retours d'usage (capture rafale, auto-qualif, CRA, restitution)**
+*Dernière mise à jour : 18 juin 2026*
 
 ---
 
@@ -319,3 +319,60 @@
 | Importante | BU-07, BU-08, BU-09, BU-10, BU-11, BU-15 | V1 |
 | Importante | BU-16 | V2 |
 | Utile | BU-12 | V1 |
+
+---
+
+# Itération « retours d'usage » (18 juin 2026)
+
+> Besoins issus d'une semaine d'usage réel. Tous livrés en production. Voir cadrage §20.
+
+## BU-20 — Capturer plusieurs tâches à la suite
+
+**En tant qu'utilisateur**, en sortie de réunion je veux saisir plusieurs tâches d'affilée sans rouvrir le formulaire à chaque fois.
+
+**Critères d'acceptation** :
+- Bouton **« Capturer et continuer »** dans la modale de capture
+- Enregistre, vide le titre et l'échéance, **conserve projet + priorité**, garde la modale ouverte et le focus
+- Compteur des tâches ajoutées dans la session
+
+**Priorité** : Importante · **Statut** : ✅ livré
+
+## BU-21 — Ne pas re-qualifier ce qui est déjà renseigné
+
+**En tant qu'utilisateur**, si j'ai déjà renseigné tous les champs de qualification, je ne veux pas que la tâche retombe dans la file « à qualifier ».
+
+**Critères d'acceptation** :
+- Si **projet + échéance + priorité explicite** sont renseignés (saisie manuelle ou vocale), la tâche passe directement en `active`
+- Indication visuelle à la capture quand la tâche sera « qualifiée »
+
+**Priorité** : Importante · **Statut** : ✅ livré
+
+## BU-22 — Saisir mon compte-rendu d'activité (CRA)
+
+**En tant qu'utilisateur**, je veux consigner le temps passé chaque jour pour suivre mon activité.
+
+**Critères d'acceptation** :
+- Saisie par **type d'activité** (liste paramétrable : réunion, expression de besoin, cahier des charges, recette, cadrage, COPIL, formation…)
+- Saisie par **projet** (mêmes projets que les tâches)
+- Saisie de la **durée au quart d'heure** (ex. 1,25 h)
+- **Décompte** vs une journée cible (défaut 7h30, paramétrable), pouvant être négatif
+- Navigation par jour, ajout / modification / suppression d'activités
+
+**Priorité** : Importante · **Statut** : ✅ livré
+
+## BU-23 — Restituer mon temps passé
+
+**En tant qu'utilisateur**, je veux une synthèse de mon temps pour la semaine ou le mois.
+
+**Critères d'acceptation** :
+- Bascule **semaine / mois**, navigation par période
+- Total saisi vs cible de la période (jours ouvrés × cible/jour)
+- Répartition **par type** et **par projet** (heures + %)
+- **Export CSV**
+- Dans la vue Semaine, **pastille d'état CRA** par jour (complet / partiel / vide)
+
+**Priorité** : Importante · **Statut** : ✅ livré
+
+## Révision des rappels (BU-03 / BU-04 / BU-05)
+
+Les rappels sont désormais envoyés par **email via Gmail SMTP** (et non push/Resend). **8h (briefing)** et **18h (relance retards)** sont **actifs** ; **12h (qualification)** est codé mais **en veille**. Push Web Push et 12h restent activables ultérieurement.

@@ -1,6 +1,6 @@
 # Schéma de base de données — Outil personnel de gestion de tâches
-**Version 2 — Suppression du champ login (cadrage §19.5)**
-*Dernière mise à jour : 11 juin 2026*
+**Version 3 — Module CRA (types_activite, activites) + cible journalière**
+*Dernière mise à jour : 18 juin 2026*
 
 ---
 
@@ -617,3 +617,76 @@ alter table jobs_notifications
   add column user_timezone text;
 -- Stocké pour debug et audit des envois
 ```
+
+---
+
+## Mises à jour — itération du 18 juin 2026 (cadrage §20, migration 7)
+
+8 tables désormais (ajout de `types_activite` et `activites`).
+
+### preferences — cible journalière CRA
+
+```sql
+alter table preferences
+  add column cible_jour_min integer not null default 450  -- 7h30
+  check (cible_jour_min > 0);
+```
+
+### Table 7 — types_activite
+
+Types d'activité du CRA, **paramétrables** par utilisateur (semés au premier accès :
+réunion, expression de besoin, cahier des charges, recette, cadrage, COPIL, formation).
+
+```sql
+create table types_activite (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id) on delete cascade,
+  nom         text not null,
+  ordre       integer not null default 0,
+  actif       boolean not null default true,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  constraint types_activite_nom_unique unique (user_id, nom)
+);
+create index on types_activite(user_id, actif);
+alter table types_activite enable row level security;
+create policy "types_activite_user" on types_activite for all
+  using ((select auth.uid()) = user_id);
+```
+
+### Table 8 — activites
+
+Saisies du CRA. Durée **au quart d'heure** (multiple de 15 min, strictement positive).
+
+```sql
+create table activites (
+  id                uuid primary key default gen_random_uuid(),
+  user_id           uuid not null references auth.users(id) on delete cascade,
+  date_activite     date not null default current_date,
+  type_activite_id  uuid references types_activite(id) on delete set null,
+  projet_id         uuid references projets(id) on delete set null,
+  duree_min         integer not null check (duree_min > 0 and duree_min % 15 = 0),
+  commentaire       text,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
+);
+create index on activites(user_id, date_activite);
+create index on activites(type_activite_id);
+create index on activites(projet_id);
+alter table activites enable row level security;
+create policy "activites_user" on activites for all
+  using ((select auth.uid()) = user_id);
+```
+
+Triggers `updated_at` ajoutés sur les deux tables (réutilisent `set_updated_at`).
+
+### jobs_notifications — usage réel
+
+La table est désormais **utilisée** par la route `/api/cron/notifications` (envoi email Gmail) :
+une ligne `envoyee` par jour et par type assure l'**idempotence** (pas de doublon).
+
+### Extension pg_net
+
+`pg_net` est installée dans le schéma **`extensions`** (et non `public` — advisor sécurité 0014).
+Le job pg_cron `notifs-email` appelle `net.http_get(...)` toutes les 5 min (les fonctions
+restent dans le schéma `net`). Voir cadrage §20.8.

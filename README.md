@@ -42,11 +42,11 @@ Tous les documents de conception sont dans [`docs/`](docs/).
 
 | Document | Version | Rôle |
 |---|---|---|
-| [cadrage-complet.md](docs/cadrage-complet.md) | v6 | **Référence fonctionnelle** — specs, cycle de vie, flux, décisions |
-| [besoins-utilisateurs.md](docs/besoins-utilisateurs.md) | v3 | Besoins utilisateurs (BU-xx) et critères d'acceptation |
-| [inventaire-ecrans.md](docs/inventaire-ecrans.md) | v3 | Liste des écrans et états |
+| [cadrage-complet.md](docs/cadrage-complet.md) | v7 | **Référence fonctionnelle** — specs, cycle de vie, flux, décisions |
+| [besoins-utilisateurs.md](docs/besoins-utilisateurs.md) | v4 | Besoins utilisateurs (BU-xx) et critères d'acceptation |
+| [inventaire-ecrans.md](docs/inventaire-ecrans.md) | v4 | Liste des écrans et états |
 | [audit-technique.md](docs/audit-technique.md) | v2 | Arbitrages techniques (PWA, Supabase, offline V2) et risques |
-| [schema-base-donnees.md](docs/schema-base-donnees.md) | v2 | Schéma PostgreSQL/Supabase, RLS, index |
+| [schema-base-donnees.md](docs/schema-base-donnees.md) | v3 | Schéma PostgreSQL/Supabase, RLS, index |
 | [api-principales.md](docs/api-principales.md) | v2 | Endpoints Next.js Route Handlers |
 | [prompt-engineering.md](docs/prompt-engineering.md) | v1 | Prompts Claude API (découpage + pré-caractérisation) |
 | [tests-tdd.md](docs/tests-tdd.md) | v2 | Catalogue de 175 tests (unit / integration / e2e) |

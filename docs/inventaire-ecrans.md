@@ -1,6 +1,6 @@
 # Inventaire des écrans — Outil personnel de gestion de tâches
-**Version 3 — Suppression du champ login (cadrage §19.5)**
-*Dernière mise à jour : 11 juin 2026*
+**Version 4 — Itération retours d'usage (CRA, restitution, vue semaine, filtres)**
+*Dernière mise à jour : 18 juin 2026*
 
 ---
 
@@ -290,3 +290,51 @@ La section Compte dans les paramètres inclut désormais :
 | Champ | Description |
 |---|---|
 | Fuseau horaire | Détecté automatiquement, modifiable (ex : "Europe/Paris") |
+
+---
+
+## Mises à jour — itération du 18 juin 2026 (cadrage §20)
+
+### Navigation (barre du bas) — révisée
+```
+├── ☀️ Aujourd'hui
+├── 📋 Backlog        (en-tête : lien 📁 Archives)
+├── ⚡ À qualifier [badge]
+├── 📊 CRA            (en-tête : lien Restitution)
+└── 📅 Semaine
+```
+**Archives** n'est plus dans la barre du bas (max 5 onglets) → accès via l'en-tête du Backlog. La liste des onglets reste plafonnée à 5 (bonne pratique mobile).
+
+### Écran 02 — Capture rapide (mis à jour)
+- Bouton **« Capturer et continuer »** (saisie en rafale) en plus de « Capturer et fermer ».
+- **Auto-qualification** : si projet + échéance + priorité sont remplis, indication « sera qualifiée » et tâche créée en `active`.
+- La capture vocale + IA reste à venir (tranche ②).
+
+### Écran 04 — Backlog (mis à jour)
+- **Barre de recherche** (titre + notes) + bouton **« Filtres »** (badge du nb de critères).
+- Panneau **Filtres** : statut / priorité / projet en **multi-sélection** ; critères actifs en **pastilles supprimables** + « Tout effacer ».
+- En-tête : lien **📁 Archives**.
+
+### Écran 06 — Qualification (wizard livré)
+Wizard one-by-one effectif : compteur « N/total », barre de progression, « Valider et suivante », « Passer ». Pré-remplissage IA non encore implémenté.
+
+### Écran 08 — Vue semaine (livrée)
+Matrice projets × jours opérationnelle. **Pastille d'état CRA** sous chaque jour (🟢 complet ≥ cible / 🟠 partiel / ⚪ vide). Tap cellule → liste des tâches du jour. Navigation par semaine.
+
+### Écran 10 — Paramètres (mis à jour)
+| Section | Contenu |
+|---|---|
+| Compte | Prénom, email, fuseau |
+| Projets | Liste + ajout/suppression |
+| **Rappels email** | Heures **Briefing matin (8h)** et **Relance retards (18h)** — le 12h est retiré de l'UI (en veille) |
+| **Compte-rendu d'activité** | Cible journalière (défaut 7h30) + gestion des **types d'activité** |
+| Seuils d'alerte | Bannière orange + rouge |
+
+### Écran 13 — CRA (saisie) — nouveau
+**Accès** : onglet 📊. Navigation par jour, carte **décompte** (vert/orange/rouge, peut être négatif), liste des activités, modale d'ajout/édition (type, projet, durée ± ¼ h, commentaire).
+
+### Écran 14 — Restitution CRA — nouveau
+**Accès** : lien « 📊 Restitution » depuis l'écran CRA. Bascule **semaine/mois**, total vs cible, répartition **par type** (barres) et **par projet** (%), **export CSV**.
+
+### Rappels — canal
+Les rappels passent par **email Gmail SMTP** (plus push/Resend). Référence : cadrage §20.8.
