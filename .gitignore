@@ -1,6 +1,9 @@
 # Archive source des documents (extraite dans docs/)
 files.zip
 
+# Mockup de design (artefact local, hors repo)
+Cadence - App Graphique (standalone).html
+
 # Dépendances
 /node_modules
 /.pnp

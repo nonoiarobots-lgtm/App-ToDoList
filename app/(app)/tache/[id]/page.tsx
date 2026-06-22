@@ -4,6 +4,7 @@ import { use, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
+import { Icon } from '@/components/ui/Icon';
 import type { Tache, PrioriteTache, StatutTache } from '@/types/tache';
 import type { Projet } from '@/types/projet';
 
@@ -70,8 +71,12 @@ function FormulaireTache({ tache, projets }: { tache: Tache; projets: Projet[] }
     <main className="screen">
       <div className="screen-header">
         <h1 className="screen-title">{tache.statut === 'a_qualifier' ? 'Qualifier' : 'Détail'}</h1>
-        <button className="btn-ghost" style={{ cursor: 'pointer' }} onClick={() => router.back()}>
-          ✕ Fermer
+        <button
+          className="btn-ghost"
+          style={{ cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          onClick={() => router.back()}
+        >
+          <Icon name="close" size={18} /> Fermer
         </button>
       </div>
       {erreur && <div className="form-error">{erreur}</div>}
@@ -146,7 +151,7 @@ function FormulaireTache({ tache, projets }: { tache: Tache; projets: Projet[] }
 
       {tache.statut === 'a_qualifier' ? (
         <button className="btn" onClick={() => enregistrer('active')} disabled={enCours}>
-          {enCours ? 'Enregistrement…' : '⚡ Valider la qualification'}
+          {enCours ? 'Enregistrement…' : 'Valider la qualification'}
         </button>
       ) : (
         <button className="btn" onClick={() => enregistrer()} disabled={enCours}>
@@ -154,8 +159,13 @@ function FormulaireTache({ tache, projets }: { tache: Tache; projets: Projet[] }
         </button>
       )}
       <div style={{ height: 10 }} />
-      <button className="btn btn-secondary" onClick={() => enregistrer('archivee')} disabled={enCours}>
-        ✓ Terminer la tâche
+      <button
+        className="btn btn-secondary"
+        onClick={() => enregistrer('archivee')}
+        disabled={enCours}
+        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+      >
+        <Icon name="check_circle" size={18} /> Terminer la tâche
       </button>
       <div style={{ height: 10 }} />
       <button className="btn btn-danger" onClick={supprimer} disabled={enCours}>

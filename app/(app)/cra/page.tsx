@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
+import { Icon } from '@/components/ui/Icon';
 import { formatHeures, heuresEnMinutes, estDureeValide, minutesEnHeures } from '@/lib/logique-cra';
 import type { Activite, TypeActivite } from '@/types/activite';
 import type { Projet } from '@/types/projet';
@@ -58,8 +59,11 @@ export default function CraPage() {
               Aujourd&apos;hui
             </button>
           )}
-          <Link href="/cra/restitution" style={{ fontSize: 13, color: 'var(--accent)' }}>
-            📊 Restitution
+          <Link
+            href="/cra/restitution"
+            style={{ fontSize: 13, color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          >
+            <Icon name="bar_chart" size={16} /> Restitution
           </Link>
         </div>
       </div>

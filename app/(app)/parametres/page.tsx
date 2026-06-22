@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Icon } from '@/components/ui/Icon';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { formatHeures, heuresEnMinutes, minutesEnHeures, estDureeValide } from '@/lib/logique-cra';
 import type { Preferences } from '@/types/preferences';
 import type { Projet, PaletteDisponible } from '@/types/projet';
@@ -121,6 +123,11 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
       {message && <div className="form-info">{message}</div>}
 
       <div className="settings-section">
+        <h2>Apparence</h2>
+        <ThemeToggle />
+      </div>
+
+      <div className="settings-section">
         <h2>Compte</h2>
         <div className="field">
           <label>Prénom</label>
@@ -143,7 +150,7 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
             )}
             <span className="projet-nom">{p.nom}</span>
             <button className="btn-ghost" style={{ cursor: 'pointer' }} onClick={() => supprimerProjet(p)}>
-              ✕
+              <Icon name="close" size={18} />
             </button>
           </div>
         ))}
@@ -199,7 +206,7 @@ function FormulaireParametres({ prefs, email }: { prefs: Preferences; email: str
             <div key={t.id} className="projet-row">
               <span className="projet-nom">{t.nom}</span>
               <button className="btn-ghost" style={{ cursor: 'pointer' }} onClick={() => supprimerType(t)}>
-                ✕
+                <Icon name="close" size={18} />
               </button>
             </div>
           ))}

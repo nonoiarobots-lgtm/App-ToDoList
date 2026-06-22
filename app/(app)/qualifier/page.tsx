@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR, { useSWRConfig } from 'swr';
 import { appeler } from '@/lib/fetcher';
+import { Icon } from '@/components/ui/Icon';
 import type { ReponseListeTaches } from '@/types/api';
 import type { Tache, PrioriteTache } from '@/types/tache';
 import type { Projet } from '@/types/projet';
@@ -97,7 +98,9 @@ function FicheQualif({ tache, projets, position, total, onTermine }: FicheProps)
   return (
     <main className="screen">
       <div className="screen-header">
-        <h1 className="screen-title">⚡ Qualifier</h1>
+        <h1 className="screen-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <Icon name="auto_awesome" style={{ color: 'var(--primary)' }} /> Qualifier
+        </h1>
         <span className="screen-count">
           {position} / {total}
         </span>

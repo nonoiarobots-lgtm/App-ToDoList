@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Icon } from '@/components/ui/Icon';
 import { estEnRetard, joursDeRetard } from '@/lib/logique-taches';
 import type { Tache } from '@/types/tache';
 
@@ -20,12 +21,12 @@ function labelEcheance(tache: Tache): { texte: string; late: boolean } | null {
 
   if (estEnRetard(tache)) {
     const jours = joursDeRetard(tache.date_echeance);
-    return { texte: jours > 0 ? `⏰ +${jours}j de retard` : '⏰ en retard', late: true };
+    return { texte: jours > 0 ? `+${jours}j de retard` : 'en retard', late: true };
   }
-  if (echeance.toDateString() === aujourdHui.toDateString()) return { texte: "📅 aujourd'hui", late: false };
-  if (echeance.toDateString() === demain.toDateString()) return { texte: '📅 demain', late: false };
+  if (echeance.toDateString() === aujourdHui.toDateString()) return { texte: "aujourd'hui", late: false };
+  if (echeance.toDateString() === demain.toDateString()) return { texte: 'demain', late: false };
   return {
-    texte: `📅 ${echeance.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}`,
+    texte: echeance.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
     late: false,
   };
 }
@@ -46,12 +47,16 @@ export function TacheCard({ tache, onCloturer }: { tache: Tache; onCloturer: (t:
           onCloturer(tache);
         }}
       >
-        ✓
+        <Icon name="check" />
       </button>
       <Link href={`/tache/${tache.id}`} className="task-body" style={{ color: 'inherit' }}>
         <div className="task-title">{tache.titre}</div>
         <div className="task-meta">
-          {tache.statut === 'a_qualifier' && <span className="tag tag-qualifier">⚡ à qualifier</span>}
+          {tache.statut === 'a_qualifier' && (
+            <span className="tag tag-qualifier">
+              <Icon name="auto_awesome" /> à qualifier
+            </span>
+          )}
           {tache.projet && (
             <span
               className="tag"
@@ -66,7 +71,9 @@ export function TacheCard({ tache, onCloturer }: { tache: Tache; onCloturer: (t:
           )}
           {echeance && <span className={`tag tag-date ${echeance.late ? 'late' : ''}`}>{echeance.texte}</span>}
           {tache.statut === 'en_attente_retour' && (
-            <span className="tag tag-qualifier">⏳ {tache.responsable}</span>
+            <span className="tag tag-qualifier">
+              <Icon name="schedule" /> {tache.responsable}
+            </span>
           )}
         </div>
       </Link>

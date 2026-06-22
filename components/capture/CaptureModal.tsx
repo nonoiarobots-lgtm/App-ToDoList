@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react';
 import { appeler } from '@/lib/fetcher';
 import { estQualifiable } from '@/lib/logique-taches';
+import { Icon } from '@/components/ui/Icon';
 import { DicteeIA } from './DicteeIA';
 import type { Projet } from '@/types/projet';
 import type { PrioriteTache } from '@/types/tache';
@@ -121,8 +122,13 @@ export function CaptureModal({ projets, onClose, onCreee }: Props) {
         >
           + Capturer et continuer
         </button>
-        <button className="btn btn-ghost" onClick={() => setMode('dictee')} disabled={enCours}>
-          🎤 Dicter plusieurs tâches (IA)
+        <button
+          className="btn btn-ghost"
+          onClick={() => setMode('dictee')}
+          disabled={enCours}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+        >
+          <Icon name="mic" size={18} /> Dicter plusieurs tâches (IA)
         </button>
         <button className="btn btn-ghost" onClick={onClose}>
           {nbAjoutees > 0 ? 'Terminé' : 'Annuler'}

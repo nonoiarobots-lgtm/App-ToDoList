@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import useSWR, { useSWRConfig } from 'swr';
 import { TacheCard } from '@/components/taches/TacheCard';
+import { Icon } from '@/components/ui/Icon';
 import { appeler } from '@/lib/fetcher';
 import {
   estEnRetard,
@@ -122,22 +123,25 @@ export default function BacklogPage() {
     <main className="screen">
       {data?.alerte && (
         <div className={`banner ${data.alerte}`}>
-          ⚡ {data.nb_a_qualifier} tâches à qualifier — pense à les traiter
+          <Icon name="auto_awesome" /> {data.nb_a_qualifier} tâches à qualifier — pense à les traiter
         </div>
       )}
       <div className="screen-header">
         <h1 className="screen-title">Backlog</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span className="screen-count">{taches.length} tâches</span>
-          <Link href="/archives" style={{ fontSize: 13, color: 'var(--accent)' }}>
-            📁 Archives
+          <Link
+            href="/archives"
+            style={{ fontSize: 13, color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+          >
+            <Icon name="inventory_2" size={16} /> Archives
           </Link>
         </div>
       </div>
 
       <div className="search-row">
         <div className="search-box">
-          <span aria-hidden>🔍</span>
+          <Icon name="search" size={18} />
           <input
             type="search"
             placeholder="Rechercher…"
@@ -158,7 +162,7 @@ export default function BacklogPage() {
         <div className="active-filtres">
           {chipsActives.map(c => (
             <button key={c.cle} className="chip-removable" onClick={c.retirer}>
-              {c.label} <span aria-hidden>✕</span>
+              {c.label} <Icon name="close" size={14} />
             </button>
           ))}
           <button className="chip-clear" onClick={() => setFiltres(FILTRES_VIDES)}>
@@ -182,9 +186,9 @@ export default function BacklogPage() {
 
       {(
         [
-          ['🔴 En retard', sections.retard],
-          ["📅 Aujourd'hui", sections.jour],
-          ['📆 Cette semaine', sections.semaine],
+          ['En retard', sections.retard],
+          ["Aujourd'hui", sections.jour],
+          ['Cette semaine', sections.semaine],
           ['Plus tard', sections.plusTard],
         ] as [string, Tache[]][]
       ).map(

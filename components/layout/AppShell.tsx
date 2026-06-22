@@ -4,6 +4,7 @@ import { useState } from 'react';
 import useSWR, { SWRConfig, useSWRConfig } from 'swr';
 import { fetcher } from '@/lib/fetcher';
 import { NavBar } from './NavBar';
+import { Icon } from '@/components/ui/Icon';
 import { CaptureModal } from '@/components/capture/CaptureModal';
 import type { ReponseListeTaches } from '@/types/api';
 import type { Projet } from '@/types/projet';
@@ -18,7 +19,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <button className="fab" aria-label="Nouvelle tâche" onClick={() => setCaptureOuverte(true)}>
-        +
+        <Icon name="add" />
       </button>
       <NavBar nbAQualifier={taches?.nb_a_qualifier ?? 0} />
       {captureOuverte && (
